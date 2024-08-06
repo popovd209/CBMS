@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Entity.models
+namespace Entity.models;
+
+public class Product : BaseEntity
 {
-    public class Product : BaseEntity
-    {
-        public string Name { get; set; }
-        public int Price { get; set; }
-        public string Category { get; set; }
-        public ICollection<ProductInOrder> ProductInOrders { get; set; }
-    }
+    [Required]
+    public string Name { get; set; }
+
+    [Required]
+    public int Price { get; set; }
+
+    [Required]
+    public string Category { get; set; }
+
+    public virtual ICollection<ProductInOrder> ProductInOrders { get; set; }
 }

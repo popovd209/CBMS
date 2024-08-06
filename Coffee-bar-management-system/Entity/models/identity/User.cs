@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace Entity.models.identity
+namespace Entity.models.identity;
+
+public class User : IdentityUser
 {
-    public class User : IdentityUser
+    public string FullName { get; set; }
+
+    public int PersonalPin { get; set; }
+
+    public enum Position
     {
-        public string FullName { get; set; }
-        public int PersonalPin { get; set; }
-        public enum Position
-        {
-            WAITER,
-            BARTENDER
-        }
-        public DateOnly Date { get; set; }
-        public ICollection<Order>? Orders { get; set; }
+        WAITER,
+        BARTENDER
     }
+
+    public DateOnly Date { get; set; }
+
+    public virtual ICollection<Order>? Orders { get; set; }
 }
