@@ -1,24 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entity.models;
 using Web.Data;
 
 namespace Web.Controllers;
 
-public class OrdersController : Controller
+public class ProductsController : Controller
 {
     private readonly ApplicationDbContext _context;
 
-    public OrdersController(ApplicationDbContext context)
+    public ProductsController(ApplicationDbContext context)
     {
         _context = context;
     }
 
     public async Task<IActionResult> Index()
     {
-        var applicationDbContext = _context.Orders.Include(o => o.CreatedBy);
-        return View(await applicationDbContext.ToListAsync());
+        return View(await _context.Products.ToListAsync());
     }
 
     public async Task<IActionResult> Details(Guid? id)
@@ -28,43 +26,38 @@ public class OrdersController : Controller
             return NotFound();
         }
 
-        var order = await _context.Orders
-            .Include(o => o.CreatedBy)
+        var product = await _context.Products
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (order == null)
+        if (product == null)
         {
             return NotFound();
         }
 
-        return View(order);
+        return View(product);
     }
 
     public IActionResult Create()
     {
-        ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id");
         return View();
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TableTag,CreatedById,Id")] Order order)
+    public async Task<IActionResult> Create([Bind("Name,Price,Category,Id")] Product product)
     {
+        //var errors = ModelState.Select(x => x.Value.Errors)
+        //    .Where(y => y.Count > 0)
+        //    .ToList();
         if (ModelState.IsValid)
         {
-            order.Id = Guid.NewGuid();
-            int total = 0;
-            foreach (var product in order.ProductsInOrder)
-            {
-                total += product.Product.Price * product.Quantity;
-            }
-            order.Total = total;
-            order.CreatedWhen = DateTime.UtcNow;
-            _context.Add(order);
+            product.Id = Guid.NewGuid();
+            _context.Add(product);
+
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", order.CreatedById);
-        return View(order);
+        return View(product);
     }
 
     public async Task<IActionResult> Edit(Guid? id)
@@ -74,20 +67,19 @@ public class OrdersController : Controller
             return NotFound();
         }
 
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null)
+        var product = await _context.Products.FindAsync(id);
+        if (product == null)
         {
             return NotFound();
         }
-        ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", order.CreatedById);
-        return View(order);
+        return View(product);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Total,TableTag,CreatedById,CreatedWhen,Id")] Order order)
+    public async Task<IActionResult> Edit(Guid id, [Bind("Name,Price,Category,Id")] Product product)
     {
-        if (id != order.Id)
+        if (id != product.Id)
         {
             return NotFound();
         }
@@ -96,12 +88,12 @@ public class OrdersController : Controller
         {
             try
             {
-                _context.Update(order);
+                _context.Update(product);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!OrderExists(order.Id))
+                if (!ProductExists(product.Id))
                 {
                     return NotFound();
                 }
@@ -112,8 +104,7 @@ public class OrdersController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
-        ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", order.CreatedById);
-        return View(order);
+        return View(product);
     }
 
     public async Task<IActionResult> Delete(Guid? id)
@@ -123,33 +114,42 @@ public class OrdersController : Controller
             return NotFound();
         }
 
-        var order = await _context.Orders
-            .Include(o => o.CreatedBy)
+        var product = await _context.Products
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (order == null)
+
+        if (product == null)
         {
             return NotFound();
         }
 
-        return View(order);
+        return View(product);
     }
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var order = await _context.Orders.FindAsync(id);
-        if (order != null)
+        var product = await _context.Products.FindAsync(id);
+        if (product != null)
         {
-            _context.Orders.Remove(order);
+            Storage? productToRemoveFromStorage = _context.Storage
+                .Where(s => s.ProductId == product.Id)
+                .FirstOrDefault();
+
+            if (productToRemoveFromStorage != null)
+            {
+                _context.Storage.Remove(productToRemoveFromStorage);
+            }
+
+            _context.Products.Remove(product);
         }
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool OrderExists(Guid id)
+    private bool ProductExists(Guid id)
     {
-        return _context.Orders.Any(e => e.Id == id);
+        return _context.Products.Any(e => e.Id == id);
     }
 }

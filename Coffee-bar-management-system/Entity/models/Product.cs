@@ -4,6 +4,11 @@ namespace Entity.models;
 
 public class Product : BaseEntity
 {
+    public Product()
+    {
+        ProductInOrders = [];
+    }
+
     [Required]
     public string Name { get; set; }
 
