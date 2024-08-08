@@ -41,29 +41,45 @@ public class OrdersController : Controller
 
     public IActionResult Create()
     {
-        ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id");
+        ViewData["Products"] = new SelectList(_context.Products, "Id", "Name");
         return View();
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TableTag,CreatedById,Id")] Order order)
+    public async Task<IActionResult> Create([Bind("TableTag,Id")] Order order, List<Guid> productIds, List<int> quantities)
     {
         if (ModelState.IsValid)
         {
             order.Id = Guid.NewGuid();
-            int total = 0;
-            foreach (var product in order.ProductsInOrder)
-            {
-                total += product.Product.Price * product.Quantity;
-            }
-            order.Total = total;
             order.CreatedWhen = DateTime.UtcNow;
+            order.Total = 0;
+            order.CreatedById = "1a2b3c4d-5678-90ab-cdef-1234567890ab";
+
+            for (int i = 0; i < productIds.Count; i++)
+            {
+                ProductInOrder productInOrder = new ProductInOrder
+                {
+                    OrderId = order.Id,
+                    ProductId = productIds[i],
+                    Quantity = quantities[i]
+                };
+
+                Product? product = await _context.Products.FindAsync(productIds[i]);
+                if (product != null)
+                {
+                    order.Total += product.Price * productInOrder.Quantity;
+                }
+
+                _context.ProductsInOrder.Add(productInOrder);
+            }
+
             _context.Add(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", order.CreatedById);
+
+        ViewData["Products"] = new SelectList(_context.Products, "Id", "Name");
         return View(order);
     }
 

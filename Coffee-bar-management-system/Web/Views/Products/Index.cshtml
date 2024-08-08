@@ -29,7 +29,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -50,6 +50,6 @@
                 <a asp-action="AddToStorage" asp-route-id="@item.Id">Add to storage</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
