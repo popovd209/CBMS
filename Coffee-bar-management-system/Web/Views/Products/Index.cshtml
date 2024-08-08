@@ -10,9 +10,6 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<p>
-    <a asp-action="AddProductsToStorage">Add products to storage</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -24,6 +21,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
             </th>
             <th></th>
         </tr>
@@ -41,9 +41,13 @@
                 @Html.DisplayFor(modelItem => item.Category)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> | 
+                <a asp-action="AddToStorage" asp-route-id="@item.Id">Add to storage</a>
             </td>
         </tr>
 }

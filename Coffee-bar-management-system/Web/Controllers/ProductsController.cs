@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Entity.models;
 using Web.Data;
+using Microsoft.CodeAnalysis;
 
 namespace Web.Controllers;
 
@@ -139,6 +140,29 @@ public class ProductsController : Controller
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<ActionResult> AddToStorage(Guid id)
+    {
+        Product? product = await _context.Products.FindAsync(id);
+        return View(product);
+    }
+
+    [HttpPost, ActionName("AddToStorage")]
+    [ValidateAntiForgeryToken]
+    public async Task<ActionResult> AddToStorage(Guid id, int quantity)
+    {
+        Product? product = await _context.Products.FindAsync(id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        product.Quantity += quantity;
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction("Index");
     }
 
     private bool ProductExists(Guid id)
