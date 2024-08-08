@@ -20,12 +20,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
 
     public virtual DbSet<ProductInOrder> ProductsInOrder { get; set; }
 
-    public virtual DbSet<Storage> Storage { get; set; }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        builder.Entity<Storage>().HasNoKey();
     }
 }

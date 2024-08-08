@@ -26,8 +26,9 @@ public class ProductsController : Controller
             return NotFound();
         }
 
-        var product = await _context.Products
+        Product? product = await _context.Products
             .FirstOrDefaultAsync(m => m.Id == id);
+
         if (product == null)
         {
             return NotFound();
@@ -53,10 +54,10 @@ public class ProductsController : Controller
             product.Id = Guid.NewGuid();
             _context.Add(product);
 
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
         return View(product);
     }
 
@@ -67,11 +68,12 @@ public class ProductsController : Controller
             return NotFound();
         }
 
-        var product = await _context.Products.FindAsync(id);
+        Product? product = await _context.Products.FindAsync(id);
         if (product == null)
         {
             return NotFound();
         }
+
         return View(product);
     }
 
@@ -132,15 +134,6 @@ public class ProductsController : Controller
         var product = await _context.Products.FindAsync(id);
         if (product != null)
         {
-            Storage? productToRemoveFromStorage = _context.Storage
-                .Where(s => s.ProductId == product.Id)
-                .FirstOrDefault();
-
-            if (productToRemoveFromStorage != null)
-            {
-                _context.Storage.Remove(productToRemoveFromStorage);
-            }
-
             _context.Products.Remove(product);
         }
 
