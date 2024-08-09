@@ -54,7 +54,7 @@ public class OrdersController : Controller
             order.Id = Guid.NewGuid();
             order.CreatedWhen = DateTime.UtcNow;
             order.Total = 0;
-            order.CreatedById = "1a2b3c4d-5678-90ab-cdef-1234567890ab";
+            order.CreatedById = "713401aa-fe2b-43a3-8fb1-78cf0481df3f";
 
             for (int i = 0; i < productIds.Count; i++)
             {
