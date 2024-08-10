@@ -1,18 +1,18 @@
-﻿using Entity.models;
-using Entity.models.identity;
+﻿using Entity.Models;
+using Entity.Models.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Web.Data;
+namespace Repository;
 
-public class ApplicationDbContext : IdentityDbContext<User>
+public class ApplicationDbContext : IdentityDbContext<CbmsUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<CbmsUser> Users { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Entity.models;
-using Web.Data;
+using Entity.Models;
+using Repository;
 
 namespace Web.Controllers;
 

@@ -1,6 +1,6 @@
-﻿using Entity.models.identity;
+﻿using Entity.Models.Identity;
 
-namespace Entity.models;
+namespace Entity.Models;
 
 public class Order : BaseEntity
 {
@@ -21,7 +21,7 @@ public class Order : BaseEntity
 
     public virtual ICollection<ProductInOrder> ProductsInOrder { get; set; }
 
-    public virtual User CreatedBy { get; set; }
+    public virtual CbmsUser CreatedBy { get; set; }
 
     public string CreatedById { get; set; }
 

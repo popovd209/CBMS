@@ -1,4 +1,4 @@
-﻿namespace Entity.models;
+﻿namespace Entity.Models;
 
 public class ProductInOrder : BaseEntity
 {
