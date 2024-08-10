@@ -1,5 +1,4 @@
-﻿using Entity.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -18,6 +17,8 @@ public class CbmsUser : IdentityUser
         WAITER,
         BARTENDER
     }
+
+    public Position UserPosition { get; set; }
 
     [AllowNull]
     public DateOnly Date { get; set; }

@@ -15,14 +15,12 @@ public class OrdersController : Controller
         _context = context;
     }
 
-    // GET: Orders
     public async Task<IActionResult> Index()
     {
         var applicationDbContext = _context.Orders.Include(o => o.CreatedBy);
         return View(await applicationDbContext.ToListAsync());
     }
 
-    // GET: Orders/Details/5
     public async Task<IActionResult> Details(Guid? id)
     {
         if (id == null)
@@ -41,32 +39,50 @@ public class OrdersController : Controller
         return View(order);
     }
 
-    // GET: Orders/Create
     public IActionResult Create()
     {
-        ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id");
+        ViewData["Products"] = new SelectList(_context.Products, "Id", "Name");
         return View();
     }
 
-    // POST: Orders/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Total,TableTag,CreatedById,CreatedWhen,Id")] Order order)
+    public async Task<IActionResult> Create([Bind("TableTag,Id")] Order order, List<Guid> productIds, List<int> quantities)
     {
         if (ModelState.IsValid)
         {
             order.Id = Guid.NewGuid();
+            order.CreatedWhen = DateTime.UtcNow;
+            order.Total = 0;
+            order.CreatedById = "1a2b3c4d-5678-90ab-cdef-1234567890ab";
+
+            for (int i = 0; i < productIds.Count; i++)
+            {
+                ProductInOrder productInOrder = new ProductInOrder
+                {
+                    OrderId = order.Id,
+                    ProductId = productIds[i],
+                    Quantity = quantities[i]
+                };
+
+                Product? product = await _context.Products.FindAsync(productIds[i]);
+                if (product != null)
+                {
+                    order.Total += product.Price * productInOrder.Quantity;
+                }
+
+                _context.ProductsInOrder.Add(productInOrder);
+            }
+
             _context.Add(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", order.CreatedById);
+
+        ViewData["Products"] = new SelectList(_context.Products, "Id", "Name");
         return View(order);
     }
 
-    // GET: Orders/Edit/5
     public async Task<IActionResult> Edit(Guid? id)
     {
         if (id == null)
@@ -83,9 +99,6 @@ public class OrdersController : Controller
         return View(order);
     }
 
-    // POST: Orders/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(Guid id, [Bind("Total,TableTag,CreatedById,CreatedWhen,Id")] Order order)
@@ -119,7 +132,6 @@ public class OrdersController : Controller
         return View(order);
     }
 
-    // GET: Orders/Delete/5
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
@@ -138,7 +150,6 @@ public class OrdersController : Controller
         return View(order);
     }
 
-    // POST: Orders/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)

@@ -13,26 +13,30 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Total" class="control-label"></label>
-                <input asp-for="Total" class="form-control" />
-                <span asp-validation-for="Total" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="TableTag" class="control-label"></label>
                 <input asp-for="TableTag" class="form-control" />
                 <span asp-validation-for="TableTag" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedById" class="control-label"></label>
-                <select asp-for="CreatedById" class ="form-control" asp-items="ViewBag.CreatedById"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedWhen" class="control-label"></label>
-                <input asp-for="CreatedWhen" class="form-control" />
-                <span asp-validation-for="CreatedWhen" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+
+            <!-- Products Selection -->
+            <div id="product-selection">
+                <h4>Select Products</h4>
+                <div class="form-group">
+                    <label for="ProductIds">Product</label>
+                    <select name="ProductIds" class="form-control" asp-items="ViewBag.Products"></select>
+                </div>
+                <div class="form-group">
+                    <label for="Quantities">Quantity</label>
+                    <input type="number" name="Quantities" class="form-control" />
+                </div>
+            </div>
+
+            <!-- Button to add more products -->
+            <div class="form-group">
+                <button type="button" id="add-product" class="btn btn-secondary">Add Another Product</button>
             </div>
         </form>
     </div>
@@ -43,5 +47,17 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#add-product').click(function () {
+                var productSelect = $('#product-selection').first().clone();
+                productSelect.find('input').val('');
+                $('#product-selection').last().after(productSelect);
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -4,6 +4,12 @@ namespace Entity.Models;
 
 public class Product : BaseEntity
 {
+    public Product()
+    {
+        ProductInOrders = [];
+        Quantity = 0;
+    }
+
     [Required]
     public string Name { get; set; }
 
@@ -12,6 +18,8 @@ public class Product : BaseEntity
 
     [Required]
     public string Category { get; set; }
+
+    public int Quantity { get; set; }
 
     public virtual ICollection<ProductInOrder> ProductInOrders { get; set; }
 }
