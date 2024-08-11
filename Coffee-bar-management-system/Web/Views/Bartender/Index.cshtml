@@ -1,7 +1,8 @@
-﻿@model IEnumerable<Entity.models.Order>
+﻿@{
+    ViewData["Title"] = "Index";
+    var pendingOrders = ViewData["pendingOrders"] as IEnumerable<Entity.models.Order>;
+    var startedOrders = ViewData["startedOrders"] as IEnumerable<Entity.models.Order>;
 
-@{
-ViewData["Title"] = "Index";
 }
 
 <h1>Pending orders</h1>
@@ -10,39 +11,90 @@ ViewData["Title"] = "Index";
     <thead>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Total)
+            Total
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.TableTag)
+            Table Number
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.CreatedBy)
+            Server id
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.CreatedWhen)
+            Created on
         </th>
         <th></th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model) {
+    @if (pendingOrders != null)
+    {
+        @foreach (var item in pendingOrders)
+        {
+            <tr>
+                <td>
+                    @item.Total
+                </td>
+                <td>
+                    @item.TableTag
+                </td>
+                <td>
+                    @item.CreatedBy.FullName
+                </td>
+                <td>
+                    @item.CreatedWhen
+                </td>
+                <td>
+                    <a asp-action="Details" class="btn btn-success" asp-route-id="@item.Id">Begin order</a>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+<h1>Started orders</h1>
+
+<table class="table">
+    <thead>
     <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Total)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TableTag)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreatedBy.FullName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreatedWhen)
-        </td>
-        <td>
-            <a asp-action="Details" asp-route-id="@item.Id">Begin order</a> |
-        </td>
+        <th>
+            Total
+        </th>
+        <th>
+            Table Number
+        </th>
+        <th>
+            Server id
+        </th>
+        <th>
+            Created on
+        </th>
+        <th></th>
     </tr>
+    </thead>
+    <tbody>
+    @if (startedOrders != null)
+    {
+        @foreach (var item in startedOrders)
+        {
+            <tr>
+                <td>
+                    @item.Total
+                </td>
+                <td>
+                    @item.TableTag
+                </td>
+                <td>
+                    @item.CreatedBy.FullName
+                </td>
+                <td>
+                    @item.CreatedWhen
+                </td>
+                <td>
+                    <a asp-action="Details" class="btn btn-success" asp-route-id="@item.Id">Continue order</a>
+                </td>
+            </tr>
+        }
     }
     </tbody>
 </table>

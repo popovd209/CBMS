@@ -46,6 +46,9 @@
                 <th>
                     Quantity
                 </th>
+                <th>
+                    Done
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -58,6 +61,9 @@
                     <td class="col-sm-2">
                         @Html.DisplayFor(model => product.Quantity)
                     </td>
+                    <td class="col-sm-2">
+                        @Html.DisplayFor(model => product.Done)
+                    </td>
                 </tr>
             }
             </tbody>
@@ -65,6 +71,9 @@
     </div>
 </div>
 <div>
-    <a asp-action="Finish" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <form asp-action="Finish">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Finish" class="btn btn-success" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
 </div>

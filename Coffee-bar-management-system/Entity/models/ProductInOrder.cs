@@ -11,4 +11,5 @@ public class ProductInOrder : BaseEntity
     public virtual Order Order { get; set; }
 
     public int Quantity { get; set; }
+    public bool Done { get; set; }
 }

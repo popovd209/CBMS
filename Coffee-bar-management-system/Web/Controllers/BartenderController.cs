@@ -17,10 +17,18 @@ public class BartenderController : Controller
     public async Task<IActionResult> Index()
     {
         var pendingOrders = await _context.Orders
+            .Include(o => o.CreatedBy)
             .Where(o => o.OrderState == State.NEW)
             .ToListAsync();
+        var startedOrders = await _context.Orders
+            .Include(o => o.CreatedBy)
+            .Where(o => o.OrderState == State.IN_PROGRESS)
+            .ToListAsync();
+       
+        ViewData["pendingOrders"] = pendingOrders;
+        ViewData["startedOrders"] = startedOrders;
         
-        return View(pendingOrders);
+        return View();
     }
     
     public async Task<IActionResult> Details(Guid? id)
@@ -44,5 +52,35 @@ public class BartenderController : Controller
         await _context.SaveChangesAsync();
 
         return View(order);
+    }
+
+    [HttpPost, ActionName("Finish")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> FinishOrder(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        
+        var order = await _context.Orders
+            .Include(o=>o.ProductsInOrder)
+            .FirstOrDefaultAsync(m => m.Id == id);
+        
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        var productsInOrder = order.ProductsInOrder;
+        foreach (var product in productsInOrder)
+        {
+            product.Done = true;
+        }
+        
+        order.OrderState = State.COMPLETE;
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 }

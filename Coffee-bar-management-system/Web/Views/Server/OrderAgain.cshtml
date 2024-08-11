@@ -1,0 +1,121 @@
+﻿
+@{
+    ViewData["Title"] = "Create";
+    var order = ViewData["Order"] as Entity.models.Order;
+}
+
+<h1>Order again</h1>
+
+<div>
+    <h4>Order</h4>
+    <hr/>
+    <dl class="row">
+        <dt class="col-sm-2">
+            Total
+        </dt>
+        <dd class="col-sm-10">
+            @order.Total
+        </dd>
+        <dt class="col-sm-2">
+            Table tag
+        </dt>
+        <dd class="col-sm-10">
+            @order.TableTag
+        </dd>
+        <dt class="col-sm-2">
+            Created by
+        </dt>
+        <dd class="col-sm-10">
+            @order.CreatedBy.FullName
+        </dd>
+        <dt class="col-sm-2">
+            Created when
+        </dt>
+        <dd class="col-sm-10">
+            @order.CreatedWhen
+        </dd>
+    </dl>
+    <div class="row">
+        <h3>Products</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Done
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var product in order.ProductsInOrder)
+            {
+            <tr>
+                <td class="col-sm-2">
+                    @product.Product.Name
+                </td>
+                <td class="col-sm-2">
+                    @product.Quantity
+                </td>
+                <td class="col-sm-2">
+                    @product.Done
+                </td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Reorder">
+            @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
+            <input type="hidden" name="Id" class="form-control" value="@order.Id" />
+            <!-- Products Selection -->
+            <div id="product-selection">
+                <h4>Select Products</h4>
+                <div class="form-group">
+                    <label for="ProductIds">Product</label>
+                    <select name="ProductIds" class="form-control" asp-items="ViewBag.Products"></select>
+                </div>
+                <div class="form-group">
+                    <label for="Quantities">Quantity</label>
+                    <input type="number" name="Quantities" class="form-control" />
+                </div>
+            </div>
+
+            <!-- Button to add more products -->
+            <div class="form-group">
+                <button type="button" id="add-product" class="btn btn-secondary">Add Another Product</button>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#add-product').click(function () {
+                var productSelect = $('#product-selection').first().clone();
+                productSelect.find('input').val('');
+                $('#product-selection').last().after(productSelect);
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
