@@ -3,25 +3,19 @@ using Entity.Models.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Repository;
-
-public class ApplicationDbContext : IdentityDbContext<CbmsUser>
+namespace Repository
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
+    public class ApplicationDbContext : IdentityDbContext<CbmsUser>
     {
-    }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
 
-    public virtual DbSet<CbmsUser> Users { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
 
-    public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<Product> Products { get; set; }
-
-    public virtual DbSet<ProductInOrder> ProductsInOrder { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
+        public virtual DbSet<ProductInOrder> ProductsInOrder { get; set; }
     }
 }

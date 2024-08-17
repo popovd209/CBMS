@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Entity.Models;
-
-public class BaseEntity
+namespace Entity.Models
 {
-    [Key]
-    public Guid Id { get; set; }
+    public class BaseEntity
+    {
+        [Key]
+        public Guid Id { get; set; }
+    }
 }

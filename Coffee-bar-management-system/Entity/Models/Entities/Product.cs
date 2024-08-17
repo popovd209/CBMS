@@ -1,25 +1,26 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Entity.Models;
-
-public class Product : BaseEntity
+namespace Entity.Models
 {
-    public Product()
+    public class Product : BaseEntity
     {
-        ProductInOrders = [];
-        Quantity = 0;
+        public Product()
+        {
+            ProductInOrders = [];
+            Quantity = 0;
+        }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public int Price { get; set; }
+
+        [Required]
+        public string Category { get; set; }
+
+        public int Quantity { get; set; }
+
+        public virtual ICollection<ProductInOrder> ProductInOrders { get; set; }
     }
-
-    [Required]
-    public string Name { get; set; }
-
-    [Required]
-    public int Price { get; set; }
-
-    [Required]
-    public string Category { get; set; }
-
-    public int Quantity { get; set; }
-
-    public virtual ICollection<ProductInOrder> ProductInOrders { get; set; }
 }

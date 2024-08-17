@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-using static Entity.Models.Identity.CbmsUser;
+﻿using Entity.Models.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Entity.DTOs
 {
@@ -21,7 +20,7 @@ namespace Entity.DTOs
         public int PersonalPin { get; set; }
 
         [Required]
-        public Position UserPosition { get; set; }
+        public CbmsUser.Position UserPosition { get; set; }
 
         [DataType(DataType.Date)]
         public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);

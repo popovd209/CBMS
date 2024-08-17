@@ -2,26 +2,28 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Entity.Models.Identity;
-
-public class CbmsUser : IdentityUser
+namespace Entity.Models.Identity
 {
-    [Required]
-    public required string FullName { get; set; }
 
-    [Required]
-    public int PersonalPin { get; set; }
-
-    public enum Position
+    public class CbmsUser : IdentityUser
     {
-        WAITER,
-        BARTENDER
+        [Required]
+        public required string FullName { get; set; }
+
+        [Required]
+        public int PersonalPin { get; set; }
+
+        public enum Position
+        {
+            WAITER,
+            BARTENDER
+        }
+
+        public Position UserPosition { get; set; }
+
+        [AllowNull]
+        public DateOnly Date { get; set; }
+
+        public virtual ICollection<Order>? Orders { get; set; }
     }
-
-    public Position UserPosition { get; set; }
-
-    [AllowNull]
-    public DateOnly Date { get; set; }
-
-    public virtual ICollection<Order>? Orders { get; set; }
 }
