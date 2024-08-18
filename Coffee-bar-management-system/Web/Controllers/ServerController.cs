@@ -52,11 +52,8 @@ public class ServerController : Controller
             order.Id = Guid.NewGuid();
             order.CreatedWhen = DateTime.UtcNow;
             order.Total = 0;
-            // Take from current user
-            //order.CreatedById = "713401aa-fe2b-43a3-8fb1-78cf0481df3f";
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             order.CreatedById = userId;
 
             for (int i = 0; i < productIds.Count; i++)

@@ -48,9 +48,6 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Price,Category,Id")] Product product)
         {
-            //var errors = ModelState.Select(x => x.Value.Errors)
-            //    .Where(y => y.Count > 0)
-            //    .ToList();
             if (ModelState.IsValid)
             {
                 product.Id = Guid.NewGuid();
