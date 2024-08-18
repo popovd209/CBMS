@@ -6,35 +6,32 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="text-center mb-4">@ViewData["Title"]</h1>
 
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-md-4">
-        <section>
+        <section class="p-4 rounded shadow-sm" style="background-color: #FFF8E1;">
             <form id="loginForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                 @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.PersonalPin" class="form-control" aria-required="true" />
+                    <input asp-for="Input.PersonalPin" class="form-control" aria-required="true" placeholder="Personal PIN" />
                     <label asp-for="Input.PersonalPin">Personal PIN</label>
                     <span asp-validation-for="Input.PersonalPin" class="text-danger"></span>
                 </div>
 
                 <div class="form-check mb-3">
                     <input asp-for="Input.RememberMe" class="form-check-input" />
-                    <label asp-for="Input.RememberMe" class="form-check-label">Remember me?</label>
+                    <label asp-for="Input.RememberMe" class="form-check-label text-coffee">Remember me?</label>
                 </div>
 
                 <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
             </form>
         </section>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <!-- External login options -->
-    </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+        <partial name="_ValidationScriptsPartial" />
 }

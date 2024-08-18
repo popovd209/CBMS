@@ -1,22 +1,89 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    font-family: 'Roboto', sans-serif;
+    color: #5D4037;
+    background-color: #F5F5F5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    color: #3E2723;
+}
+
+header {
+    background-color: #3E2723;
+    color: #FFFFFF;
+    padding: 10px 0;
+}
+
+.navbar-brand, .nav-link {
+    color: #FFFFFF !important;
+}
+
+.footer {
+    background-color: #3E2723;
+    color: #FFFFFF;
+    padding: 10px 0;
+}
+
+.btn-primary {
+    background-color: #795548;
+    border-color: #6D4C41;
+    border-radius: 5px;
+}
+
+.btn-primary:hover {
+    background-color: #6D4C41;
+    border-color: #5D4037;
+}
+
+.form-control, .form-check-input {
+    border-radius: 5px;
+    border-color: #D7CCC8;
+    background-color: #FFF8E1;
+}
+
+.form-floating label {
+    color: #5D4037;
+}
+
+.container-fluid, .container {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+a {
+    color: #795548;
+}
+
+a:hover {
+    color: #6D4C41;
+    text-decoration: none;
+}
+
+body, header, footer {
+    color: #FFFFFF;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #6b4e16 !important;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #a05d1a !important;
+}
+
+.text-coffee {
+    color: #6b4e16;
+}
+
+.btn-coffee {
+    background-color: #6b4e16;
+    color: white;
+    border: none;
+}
+
+.btn-coffee:hover {
+    background-color: #a05d1a;
+    color: white;
 }
