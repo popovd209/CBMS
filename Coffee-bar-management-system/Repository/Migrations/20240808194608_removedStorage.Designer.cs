@@ -25,7 +25,7 @@ namespace Web.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Entity.models.Order", b =>
+            modelBuilder.Entity("Entity.Models.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace Web.Data.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Entity.models.Product", b =>
+            modelBuilder.Entity("Entity.Models.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -76,7 +76,7 @@ namespace Web.Data.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Entity.models.ProductInOrder", b =>
+            modelBuilder.Entity("Entity.Models.ProductInOrder", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +100,7 @@ namespace Web.Data.Migrations
                     b.ToTable("ProductsInOrder");
                 });
 
-            modelBuilder.Entity("Entity.models.identity.User", b =>
+            modelBuilder.Entity("Entity.Models.identity.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -312,9 +312,9 @@ namespace Web.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Entity.models.Order", b =>
+            modelBuilder.Entity("Entity.Models.Order", b =>
                 {
-                    b.HasOne("Entity.models.identity.User", "CreatedBy")
+                    b.HasOne("Entity.Models.identity.User", "CreatedBy")
                         .WithMany("Orders")
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -323,15 +323,15 @@ namespace Web.Data.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("Entity.models.ProductInOrder", b =>
+            modelBuilder.Entity("Entity.Models.ProductInOrder", b =>
                 {
-                    b.HasOne("Entity.models.Order", "Order")
+                    b.HasOne("Entity.Models.Order", "Order")
                         .WithMany("ProductsInOrder")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Entity.models.Product", "Product")
+                    b.HasOne("Entity.Models.Product", "Product")
                         .WithMany("ProductInOrders")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -353,7 +353,7 @@ namespace Web.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Entity.models.identity.User", null)
+                    b.HasOne("Entity.Models.identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -362,7 +362,7 @@ namespace Web.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Entity.models.identity.User", null)
+                    b.HasOne("Entity.Models.identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -377,7 +377,7 @@ namespace Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Entity.models.identity.User", null)
+                    b.HasOne("Entity.Models.identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -386,24 +386,24 @@ namespace Web.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Entity.models.identity.User", null)
+                    b.HasOne("Entity.Models.identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Entity.models.Order", b =>
+            modelBuilder.Entity("Entity.Models.Order", b =>
                 {
                     b.Navigation("ProductsInOrder");
                 });
 
-            modelBuilder.Entity("Entity.models.Product", b =>
+            modelBuilder.Entity("Entity.Models.Product", b =>
                 {
                     b.Navigation("ProductInOrders");
                 });
 
-            modelBuilder.Entity("Entity.models.identity.User", b =>
+            modelBuilder.Entity("Entity.Models.identity.User", b =>
                 {
                     b.Navigation("Orders");
                 });

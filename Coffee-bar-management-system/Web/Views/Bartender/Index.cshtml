@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    var pendingOrders = ViewData["pendingOrders"] as IEnumerable<Entity.Models.Order>;
+    var startedOrders = ViewData["startedOrders"] as IEnumerable<Entity.Models.Order>;
+
+}
+
+<h1>Pending orders</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Total
+        </th>
+        <th>
+            Table Number
+        </th>
+        <th>
+            Server id
+        </th>
+        <th>
+            Created on
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (pendingOrders != null)
+    {
+        @foreach (var item in pendingOrders)
+        {
+            <tr>
+                <td>
+                    @item.Total
+                </td>
+                <td>
+                    @item.TableTag
+                </td>
+                <td>
+                    @item.CreatedBy.FullName
+                </td>
+                <td>
+                    @item.CreatedWhen
+                </td>
+                <td>
+                    <a asp-action="Details" class="btn btn-success" asp-route-id="@item.Id">Begin order</a>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+<h1>Started orders</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Total
+        </th>
+        <th>
+            Table Number
+        </th>
+        <th>
+            Server id
+        </th>
+        <th>
+            Created on
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (startedOrders != null)
+    {
+        @foreach (var item in startedOrders)
+        {
+            <tr>
+                <td>
+                    @item.Total
+                </td>
+                <td>
+                    @item.TableTag
+                </td>
+                <td>
+                    @item.CreatedBy.FullName
+                </td>
+                <td>
+                    @item.CreatedWhen
+                </td>
+                <td>
+                    <a asp-action="Details" class="btn btn-success" asp-route-id="@item.Id">Continue order</a>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
