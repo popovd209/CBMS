@@ -1,12 +1,12 @@
 body {
     font-family: 'Roboto', sans-serif;
-    color: #5D4037;
+    color: #6b4e16;
     background-color: #F5F5F5;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
-    color: #3E2723;
+    color: #573731;
 }
 
 header {
@@ -21,15 +21,17 @@ header {
 
 .footer {
     background-color: #3E2723;
-    color: #FFFFFF;
     padding: 10px 0;
+}
+
+.btn {
+    color: #fff;
+    border-radius: 0.3rem;
 }
 
 .btn-primary {
     background-color: #795548;
     border-color: #6D4C41;
-    border-radius: 5px;
-    color: #fff;
 }
 
 .btn-primary:hover {
@@ -62,10 +64,6 @@ a:hover {
     text-decoration: none;
 }
 
-body, header, footer {
-    color: #FFFFFF;
-}
-
 .navbar-light .navbar-nav .nav-link {
     color: #6b4e16 !important;
 }
@@ -76,17 +74,6 @@ body, header, footer {
 
 .text-coffee {
     color: #6b4e16;
-}
-
-.btn-coffee {
-    background-color: #6b4e16;
-    color: white;
-    border: none;
-}
-
-.btn-coffee:hover {
-    background-color: #a05d1a;
-    color: white;
 }
 
 a.navbar-brand {

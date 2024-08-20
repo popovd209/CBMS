@@ -1,107 +1,88 @@
-﻿
-@{
-    ViewData["Title"] = "Create";
+﻿@{
+    ViewData["Title"] = "Order Again";
     var order = ViewData["Order"] as Entity.Models.Order;
 }
 
-<h1>Order again</h1>
+<h1 class="text-center mb-4">Order Again</h1>
 
-<div>
-    <h4>Order</h4>
-    <hr/>
-    <dl class="row">
-        <dt class="col-sm-2">
-            Total
-        </dt>
-        <dd class="col-sm-10">
-            @order.Total
-        </dd>
-        <dt class="col-sm-2">
-            Table tag
-        </dt>
-        <dd class="col-sm-10">
-            @order.TableTag
-        </dd>
-        <dt class="col-sm-2">
-            Created by
-        </dt>
-        <dd class="col-sm-10">
-            @order.CreatedBy.FullName
-        </dd>
-        <dt class="col-sm-2">
-            Created when
-        </dt>
-        <dd class="col-sm-10">
-            @order.CreatedWhen
-        </dd>
-    </dl>
-    <div class="row">
-        <h3>Products</h3>
-        <table class="table">
-            <thead>
+<h4 class="text-coffee">Order Details</h4>
+<hr class="border-coffee" />
+<dl class="row text-coffee">
+    <dt class="col-sm-2">Total</dt>
+    <dd class="col-sm-10">@order.Total</dd>
+    <dt class="col-sm-2">Table Tag</dt>
+    <dd class="col-sm-10">@order.TableTag</dd>
+    <dt class="col-sm-2">Created By</dt>
+    <dd class="col-sm-10">@order.CreatedBy.FullName</dd>
+    <dt class="col-sm-2">Created When</dt>
+    <dd class="col-sm-10">@order.CreatedWhen</dd>
+</dl>
+
+<div class="row mt-4">
+    <h4 class="text-coffee">Products</h4>
+    <table class="table table-striped table-bordered mt-2">
+        <thead class="table-dark">
             <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Quantity
-                </th>
-                <th>
-                    Done
-                </th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Done</th>
             </tr>
-            </thead>
-            <tbody>
+        </thead>
+        <tbody>
             @foreach (var product in order.ProductsInOrder)
             {
-            <tr>
-                <td class="col-sm-2">
-                    @product.Product.Name
-                </td>
-                <td class="col-sm-2">
-                    @product.Quantity
-                </td>
-                <td class="col-sm-2">
-                    @product.Done
-                </td>
-            </tr>
+                <tr>
+                    <td class="col-sm-2">@product.Product.Name</td>
+                    <td class="col-sm-2">@product.Quantity</td>
+                    <td class="col-sm-2">@product.Done</td>
+                </tr>
             }
-            </tbody>
-        </table>
-    </div>
+        </tbody>
+    </table>
 </div>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+
+<hr class="border-coffee" />
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
         <form asp-action="Reorder">
-            @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
             <input type="hidden" name="Id" class="form-control" value="@order.Id" />
-            <!-- Products Selection -->
-            <div id="product-selection">
-                <h4>Select Products</h4>
-                <div class="form-group">
-                    <label for="ProductIds">Product</label>
-                    <select name="ProductIds" class="form-control" asp-items="ViewBag.Products"></select>
+
+            <h4 class="text-coffee mt-4">Select Products</h4>
+            <div id="product-selection-container" class="container p-3 bg-light border border-coffee rounded">
+                <div id="product-selection">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="ProductIds" class="text-coffee">Product</label>
+                                <select name="ProductIds" class="form-control" asp-items="ViewBag.Products"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="Quantities" class="text-coffee">Quantity</label>
+                                <input type="number" name="Quantities" class="form-control" min="1" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="Quantities">Quantity</label>
-                    <input type="number" name="Quantities" class="form-control" />
+
+                <div class="form-group text-end">
+                    <button type="button" id="add-product" class="btn btn-secondary">Add Another Product</button>
                 </div>
             </div>
 
-            <!-- Button to add more products -->
-            <div class="form-group">
-                <button type="button" id="add-product" class="btn btn-secondary">Add Another Product</button>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="text-end mt-3">
+                <div class="text-center" style="display:inline-block">
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+
+                <div class="form-group" style="display:inline-block">
+                    <input type="submit" value="Reorder" class="btn btn-primary" />
+                </div>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
@@ -110,10 +91,13 @@
         $(document).ready(function () {
             $('#add-product').click(function () {
                 var productSelect = $('#product-selection').first().clone();
+
+                productSelect.find('select').val('');
                 productSelect.find('input').val('');
-                $('#product-selection').last().after(productSelect);
+
+                $('#add-product').closest('.form-group').before(productSelect);
+                });
             });
-        });
     </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
