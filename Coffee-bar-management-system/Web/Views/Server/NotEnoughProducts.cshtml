@@ -1,0 +1,9 @@
+﻿@model Product
+
+@{
+    Layout = null;
+}
+<div>
+    <h1>Sorry, there are not enough products left of @Html.DisplayFor(model => model.Name).</h1>
+    <h2>There are only @Html.DisplayFor(model => model.Quantity) left of @Html.DisplayFor(model => model.Name).</h2>
+</div>
