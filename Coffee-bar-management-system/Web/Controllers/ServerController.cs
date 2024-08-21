@@ -18,17 +18,21 @@ public class ServerController : Controller
 
     public async Task<IActionResult> Index()
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var completedOrders = await _context.Orders
             .Include(o => o.CreatedBy)
             .Where(o => o.OrderState == State.COMPLETE)
+            .Where(o => o.CreatedBy.Id == userId )
             .ToListAsync();
         var pendingOrders = await _context.Orders
             .Include(o => o.CreatedBy)
             .Where(o => o.OrderState == State.NEW)
+            .Where(o => o.CreatedBy.Id == userId )
             .ToListAsync();
         var deliveredOrders = await _context.Orders
             .Include(o => o.CreatedBy)
             .Where(o => o.OrderState == State.DELIVERED)
+            .Where(o => o.CreatedBy.Id == userId )
             .ToListAsync();
        
         ViewData["completedOrders"] = completedOrders;
@@ -58,20 +62,28 @@ public class ServerController : Controller
 
             for (int i = 0; i < productIds.Count; i++)
             {
-                ProductInOrder productInOrder = new ProductInOrder
-                {
-                    OrderId = order.Id,
-                    ProductId = productIds[i],
-                    Quantity = quantities[i]
-                };
-
                 Product? product = await _context.Products.FindAsync(productIds[i]);
                 if (product != null)
                 {
-                    order.Total += product.Price * productInOrder.Quantity;
+                    var availableQuantity = product.Quantity;
+                    var seekedQuantity = quantities[i];
+                    if (seekedQuantity <= availableQuantity)
+                    {
+                        product.Quantity -= seekedQuantity;
+                        ProductInOrder productInOrder = new ProductInOrder
+                        {
+                            OrderId = order.Id,
+                            ProductId = product.Id,
+                            Quantity = seekedQuantity
+                        };
+                        order.Total += product.Price * productInOrder.Quantity;
+                        _context.ProductsInOrder.Add(productInOrder);
+                    }
+                    else
+                    {
+                        return View("NotEnoughProducts", product);
+                    }
                 }
-
-                _context.ProductsInOrder.Add(productInOrder);
             }
 
             _context.Add(order);
@@ -139,6 +151,8 @@ public class ServerController : Controller
         }
         
         var order = await _context.Orders
+            .Include(o => o.ProductsInOrder)
+            .Include("ProductsInOrder.Product")
             .FirstOrDefaultAsync(m => m.Id == id);
         
         if (order == null)
@@ -146,7 +160,36 @@ public class ServerController : Controller
             return NotFound();
         }
         
-        order.OrderState = State.CANCELLED;
+        var productsInOrder = order.ProductsInOrder;
+        var doneProductsCounter = 0;
+        foreach (var product in productsInOrder)
+        {
+            if (!product.Done)
+            {
+                var productObj = await _context.Products
+                    .FirstOrDefaultAsync(m => m.Id == product.ProductId);
+                if (productObj != null)
+                {
+                    productObj.Quantity += product.Quantity;
+                }
+                order.Total -= product.Product.Price * product.Quantity;
+                _context.ProductsInOrder.Remove(product);
+            }
+            else
+            {
+                doneProductsCounter++;
+            }
+        }
+
+        if (doneProductsCounter == 0)
+        {
+            order.OrderState = State.CANCELLED;
+        }
+        else
+        {
+            order.OrderState = State.DELIVERED;
+        }
+        
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
@@ -195,20 +238,29 @@ public class ServerController : Controller
         {
             for (int i = 0; i < productIds.Count; i++)
             {
-                ProductInOrder productInOrder = new ProductInOrder
-                {
-                    OrderId = id,
-                    ProductId = productIds[i],
-                    Quantity = quantities[i]
-                };
-
                 Product? product = await _context.Products.FindAsync(productIds[i]);
+                
                 if (product != null)
                 {
-                    order.Total += product.Price * productInOrder.Quantity;
+                    var availableQuantity = product.Quantity;
+                    var seekedQuantity = quantities[i];
+                    if (seekedQuantity <= availableQuantity)
+                    {
+                        product.Quantity -= seekedQuantity;
+                        ProductInOrder productInOrder = new ProductInOrder
+                        {
+                            OrderId = id,
+                            ProductId = productIds[i],
+                            Quantity = quantities[i]
+                        };
+                        order.Total += product.Price * productInOrder.Quantity;
+                        _context.ProductsInOrder.Add(productInOrder);
+                    }
+                    else
+                    {
+                        return View("NotEnoughProducts", product);
+                    }
                 }
-
-                _context.ProductsInOrder.Add(productInOrder);
             }
 
             order.OrderState = State.NEW;
