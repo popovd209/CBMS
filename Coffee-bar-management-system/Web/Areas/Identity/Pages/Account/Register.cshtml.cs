@@ -8,12 +8,13 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Entity.Models.Identity;
-using Entity.Models;
+using Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace EShop.Web.Areas.Identity.Pages.Account
@@ -119,8 +120,18 @@ namespace EShop.Web.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             if (ModelState.IsValid)
             {
+                var existingUser = await _userManager.Users
+                    .FirstOrDefaultAsync(u => u.PersonalPin == Input.PersonalPin);
+
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError(string.Empty, "An account with the same Personal Pin already exists. Please choose another.");
+                    return Page();
+                }
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -129,10 +140,19 @@ namespace EShop.Web.Areas.Identity.Pages.Account
                 user.PersonalPin = Input.PersonalPin;
                 user.UserPosition = Input.UserPosition;
                 user.Date = Input.Date;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
+                    switch (user.UserPosition)
+                    {
+                        case CbmsUser.Position.WAITER: await _userManager.AddToRoleAsync(user, SeedData.Role.Waiter.ToString());
+                            break;
+                        case CbmsUser.Position.BARTENDER: await _userManager.AddToRoleAsync(user, SeedData.Role.Bartender.ToString());
+                            break;
+                    }
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -162,10 +182,9 @@ namespace EShop.Web.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
-            // If we got this far, something failed, redisplay form
             return Page();
         }
+
 
         private CbmsUser CreateUser()
         {
