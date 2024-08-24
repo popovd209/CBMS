@@ -1,7 +1,9 @@
 ﻿using Entity.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Service;
 
 
 namespace Web.Controllers;
@@ -15,6 +17,7 @@ public class BartenderController : Controller
         _context = context;
     }
 
+    [Authorize(Roles = SeedData.GetRoleFor.Bartender)]
     public async Task<IActionResult> Index()
     {
         var pendingOrders = await _context.Orders
