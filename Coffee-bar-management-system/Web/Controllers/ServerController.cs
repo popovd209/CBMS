@@ -1,8 +1,10 @@
 ﻿using Entity.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Service;
 using System.Security.Claims;
 
 namespace Web.Controllers;
@@ -16,6 +18,7 @@ public class ServerController : Controller
         _context = context;
     }
 
+    [Authorize(Roles = SeedData.GetRoleFor.Waiter)]
     public async Task<IActionResult> Index()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

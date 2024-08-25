@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Entity.Models;
 using Repository;
 using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Authorization;
+using Service;
 
 namespace Web.Controllers
 {
@@ -15,6 +17,7 @@ namespace Web.Controllers
         {
             _context = context;
         }
+
 
         public async Task<IActionResult> Index()
         {
