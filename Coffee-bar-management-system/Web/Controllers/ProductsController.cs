@@ -160,6 +160,11 @@ namespace Web.Controllers
                 return NotFound();
             }
 
+            if (quantity < 0)
+            {
+                ViewData["errorMessage"] = "Quantity cannot be a negative number.";
+                return View("AddToStorage", product);
+            }
             product.Quantity += quantity;
 
             await _context.SaveChangesAsync();
