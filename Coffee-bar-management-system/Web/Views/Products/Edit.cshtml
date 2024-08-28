@@ -30,6 +30,12 @@
                     <span asp-validation-for="Category" class="text-danger"></span>
                 </div>
 
+                <div class="form-group mb-3">
+                    <label asp-for="Quantity" class="form-label text-coffee">Quantity</label>
+                    <input asp-for="Quantity" class="form-control" placeholder="Enter quantity" />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+
                 <input type="hidden" asp-for="Id" />
 
                 <div class="text-end mt-3">

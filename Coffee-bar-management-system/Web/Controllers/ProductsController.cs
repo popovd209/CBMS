@@ -81,7 +81,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Price,Category,Id")] Product product)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Price,Category,Quantity,Id")] Product product)
         {
             if (id != product.Id)
             {
