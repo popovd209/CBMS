@@ -31,6 +31,8 @@ builder.Services.AddScoped(typeof(IOrderRepository), typeof(OrderRepository));
 
 builder.Services.AddTransient<IBartenderService, BartenderService>();
 builder.Services.AddTransient<IProductsService, ProductsService>();
+builder.Services.AddTransient<IServerService, ServerService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

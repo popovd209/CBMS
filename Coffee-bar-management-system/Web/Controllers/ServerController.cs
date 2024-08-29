@@ -6,37 +6,30 @@ using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service;
 using System.Security.Claims;
+using Service.Interface;
 
 namespace Web.Controllers;
 
 public class ServerController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IServerService _serverService;
+    private readonly IProductsService _productsService;
 
-    public ServerController(ApplicationDbContext context)
+    public ServerController(ApplicationDbContext context, IServerService serverService, IProductsService productsService)
     {
         _context = context;
+        _serverService = serverService;
+        _productsService = productsService;
     }
 
     [Authorize(Roles = SeedData.GetRoleFor.Waiter)]
     public async Task<IActionResult> Index()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var completedOrders = await _context.Orders
-            .Include(o => o.CreatedBy)
-            .Where(o => o.OrderState == State.COMPLETE)
-            .Where(o => o.CreatedBy.Id == userId )
-            .ToListAsync();
-        var pendingOrders = await _context.Orders
-            .Include(o => o.CreatedBy)
-            .Where(o => o.OrderState == State.NEW)
-            .Where(o => o.CreatedBy.Id == userId )
-            .ToListAsync();
-        var deliveredOrders = await _context.Orders
-            .Include(o => o.CreatedBy)
-            .Where(o => o.OrderState == State.DELIVERED)
-            .Where(o => o.CreatedBy.Id == userId )
-            .ToListAsync();
+        var completedOrders = _serverService.GetPersonalizedOrdersByState(State.COMPLETE, userId);
+        var pendingOrders = _serverService.GetPersonalizedOrdersByState(State.NEW, userId);
+        var deliveredOrders = _serverService.GetPersonalizedOrdersByState(State.DELIVERED, userId);
        
         ViewData["completedOrders"] = completedOrders;
         ViewData["deliveredOrders"] = deliveredOrders;
@@ -46,7 +39,8 @@ public class ServerController : Controller
     
     public IActionResult Create()
     {
-        ViewData["Products"] = new SelectList(_context.Products, "Id", "Name");
+        var products = _productsService.GetAllProducts();
+        ViewData["Products"] = new SelectList(products, "Id", "Name");
         return View();
     }
     
@@ -56,16 +50,13 @@ public class ServerController : Controller
     {
         if (ModelState.IsValid)
         {
-            order.Id = Guid.NewGuid();
-            order.CreatedWhen = DateTime.UtcNow;
-            order.Total = 0;
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            order.CreatedById = userId;
-
+            var newOrder = _serverService.CreateOrder(order, userId);
+            
             for (int i = 0; i < productIds.Count; i++)
             {
-                Product? product = await _context.Products.FindAsync(productIds[i]);
+                Product? product = _productsService.GetProductDetails(productIds[i]);
+                
                 if (product != null)
                 {
                     var availableQuantity = product.Quantity;
@@ -73,19 +64,12 @@ public class ServerController : Controller
                     if (quantities[i] < 0)
                     {
                         ViewData["errorMessage"] = "Quantity cannot be a negative number.";
-                        return View("Create", order);
+                        return View("Create", newOrder);
                     }
+                    
                     if (seekedQuantity <= availableQuantity)
                     {
-                        product.Quantity -= seekedQuantity;
-                        ProductInOrder productInOrder = new ProductInOrder
-                        {
-                            OrderId = order.Id,
-                            ProductId = product.Id,
-                            Quantity = seekedQuantity
-                        };
-                        order.Total += product.Price * productInOrder.Quantity;
-                        _context.ProductsInOrder.Add(productInOrder);
+                        _serverService.AddProductToOrder(newOrder, product, seekedQuantity);
                     }
                     else
                     {
@@ -93,13 +77,11 @@ public class ServerController : Controller
                     }
                 }
             }
-
-            _context.Add(order);
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        ViewData["Products"] = new SelectList(_context.Products, "Id", "Name");
+        var products = _productsService.GetAllProducts();
+        ViewData["Products"] = new SelectList(products, "Id", "Name");
         return View(order);
     }
     
@@ -111,17 +93,15 @@ public class ServerController : Controller
         {
             return NotFound();
         }
-        
-        var order = await _context.Orders
-            .FirstOrDefaultAsync(m => m.Id == id);
+
+        var order = _serverService.GetOrderDetails(id);
         
         if (order == null)
         {
             return NotFound();
         }
-        
-        order.OrderState = State.DELIVERED;
-        await _context.SaveChangesAsync();
+
+        _serverService.ChangeOrderState(order, State.DELIVERED);
 
         return RedirectToAction(nameof(Index));
     }
@@ -134,17 +114,15 @@ public class ServerController : Controller
         {
             return NotFound();
         }
-        
-        var order = await _context.Orders
-            .FirstOrDefaultAsync(m => m.Id == id);
+
+        var order = _serverService.GetOrderDetails(id);
         
         if (order == null)
         {
             return NotFound();
         }
-        
-        order.OrderState = State.PAID;
-        await _context.SaveChangesAsync();
+
+        _serverService.ChangeOrderState(order, State.PAID);
 
         return RedirectToAction(nameof(Index));
     }
@@ -157,49 +135,15 @@ public class ServerController : Controller
         {
             return NotFound();
         }
-        
-        var order = await _context.Orders
-            .Include(o => o.ProductsInOrder)
-            .Include("ProductsInOrder.Product")
-            .FirstOrDefaultAsync(m => m.Id == id);
+
+        var order = _serverService.GetOrderDetails(id);
         
         if (order == null)
         {
             return NotFound();
         }
+        _serverService.CancelOrder(order);
         
-        var productsInOrder = order.ProductsInOrder;
-        var doneProductsCounter = 0;
-        foreach (var product in productsInOrder)
-        {
-            if (!product.Done)
-            {
-                var productObj = await _context.Products
-                    .FirstOrDefaultAsync(m => m.Id == product.ProductId);
-                if (productObj != null)
-                {
-                    productObj.Quantity += product.Quantity;
-                }
-                order.Total -= product.Product.Price * product.Quantity;
-                _context.ProductsInOrder.Remove(product);
-            }
-            else
-            {
-                doneProductsCounter++;
-            }
-        }
-
-        if (doneProductsCounter == 0)
-        {
-            order.OrderState = State.CANCELLED;
-        }
-        else
-        {
-            order.OrderState = State.DELIVERED;
-        }
-        
-        await _context.SaveChangesAsync();
-
         return RedirectToAction(nameof(Index));
     }
 
@@ -210,16 +154,14 @@ public class ServerController : Controller
             return NotFound();
         }
 
-        var order = await _context.Orders
-            .Include(o => o.CreatedBy)
-            .Include(o => o.ProductsInOrder)
-            .Include("ProductsInOrder.Product")
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var order = _serverService.GetOrderDetails(id);
         if (order == null)
         {
             return NotFound();
         }
-        ViewData["Products"] = new SelectList(_context.Products, "Id", "Name");
+
+        var products = _productsService.GetAllProducts();
+        ViewData["Products"] = new SelectList(products, "Id", "Name");
         ViewData["Order"] = order;
         
         return View();
@@ -233,9 +175,8 @@ public class ServerController : Controller
         {
             return NotFound();
         }
-        
-        var order = await _context.Orders
-            .FirstOrDefaultAsync(m => m.Id == id);
+
+        var order = _serverService.GetOrderDetails(id);
         
         if (order == null)
         {
@@ -246,7 +187,7 @@ public class ServerController : Controller
         {
             for (int i = 0; i < productIds.Count; i++)
             {
-                Product? product = await _context.Products.FindAsync(productIds[i]);
+                Product? product = _productsService.GetProductDetails(productIds[i]);
                 
                 if (product != null)
                 {
@@ -259,15 +200,7 @@ public class ServerController : Controller
                     }
                     if (seekedQuantity <= availableQuantity)
                     {
-                        product.Quantity -= seekedQuantity;
-                        ProductInOrder productInOrder = new ProductInOrder
-                        {
-                            OrderId = id,
-                            ProductId = productIds[i],
-                            Quantity = quantities[i]
-                        };
-                        order.Total += product.Price * productInOrder.Quantity;
-                        _context.ProductsInOrder.Add(productInOrder);
+                        _serverService.AddProductToOrder(order, product, seekedQuantity);
                     }
                     else
                     {
@@ -276,8 +209,7 @@ public class ServerController : Controller
                 }
             }
 
-            order.OrderState = State.NEW;
-            await _context.SaveChangesAsync();
+            _serverService.ChangeOrderState(order, State.NEW);
             return RedirectToAction(nameof(Index));
         }
         
