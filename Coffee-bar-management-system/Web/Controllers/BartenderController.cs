@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service;
+using Service.Interface;
 
 
 namespace Web.Controllers;
@@ -11,23 +12,19 @@ namespace Web.Controllers;
 public class BartenderController : Controller
 {
     private readonly ApplicationDbContext _context;
-
-    public BartenderController(ApplicationDbContext context)
+    private readonly IBartenderService _bartenderService;
+    
+    public BartenderController(ApplicationDbContext context, IBartenderService bartenderService)
     {
         _context = context;
+        _bartenderService = bartenderService;
     }
 
     [Authorize(Roles = SeedData.GetRoleFor.Bartender)]
     public async Task<IActionResult> Index()
     {
-        var pendingOrders = await _context.Orders
-            .Include(o => o.CreatedBy)
-            .Where(o => o.OrderState == State.NEW)
-            .ToListAsync();
-        var startedOrders = await _context.Orders
-            .Include(o => o.CreatedBy)
-            .Where(o => o.OrderState == State.IN_PROGRESS)
-            .ToListAsync();
+        var pendingOrders = _bartenderService.GetFilteredOrdersByState(State.NEW);
+        var startedOrders = _bartenderService.GetFilteredOrdersByState(State.IN_PROGRESS);
        
         ViewData["pendingOrders"] = pendingOrders;
         ViewData["startedOrders"] = startedOrders;
@@ -42,18 +39,14 @@ public class BartenderController : Controller
             return NotFound();
         }
 
-        var order = await _context.Orders
-            .Include(o => o.CreatedBy)
-            .Include(o => o.ProductsInOrder)
-            .Include("ProductsInOrder.Product")
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var order = _bartenderService.GetOrderById(id);
+        
         if (order == null)
         {
             return NotFound();
         }
 
-        order.OrderState = State.IN_PROGRESS;
-        await _context.SaveChangesAsync();
+        _bartenderService.ChangeOrderStatus(order, State.IN_PROGRESS);
 
         return View(order);
     }
@@ -67,23 +60,14 @@ public class BartenderController : Controller
             return NotFound();
         }
         
-        var order = await _context.Orders
-            .Include(o=>o.ProductsInOrder)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var order = _bartenderService.GetOrderById(id);
         
         if (order == null)
         {
             return NotFound();
         }
 
-        var productsInOrder = order.ProductsInOrder;
-        foreach (var product in productsInOrder)
-        {
-            product.Done = true;
-        }
-        
-        order.OrderState = State.COMPLETE;
-        await _context.SaveChangesAsync();
+        _bartenderService.MakeOrder(order);
 
         return RedirectToAction(nameof(Index));
     }
