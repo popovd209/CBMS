@@ -70,6 +70,11 @@ public class ServerController : Controller
                 {
                     var availableQuantity = product.Quantity;
                     var seekedQuantity = quantities[i];
+                    if (quantities[i] < 0)
+                    {
+                        ViewData["errorMessage"] = "Quantity cannot be a negative number.";
+                        return View("Create", order);
+                    }
                     if (seekedQuantity <= availableQuantity)
                     {
                         product.Quantity -= seekedQuantity;
@@ -247,6 +252,11 @@ public class ServerController : Controller
                 {
                     var availableQuantity = product.Quantity;
                     var seekedQuantity = quantities[i];
+                    if (quantities[i] < 0)
+                    {
+                        ViewData["errorMessage"] = "Quantity cannot be a negative number.";
+                        return View("OrderAgain", order);
+                    }
                     if (seekedQuantity <= availableQuantity)
                     {
                         product.Quantity -= seekedQuantity;
