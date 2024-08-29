@@ -5,23 +5,25 @@ using Repository;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Authorization;
 using Service;
+using Service.Interface;
 
 namespace Web.Controllers
 {
 
     public class ProductsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IProductsService _productsService;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(IProductsService productsService)
         {
-            _context = context;
+            _productsService = productsService;
         }
 
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            var products = _productsService.GetAllProducts();
+            return View(products);
         }
 
         public async Task<IActionResult> Details(Guid? id)
@@ -31,8 +33,7 @@ namespace Web.Controllers
                 return NotFound();
             }
 
-            Product? product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Product? product = _productsService.GetProductDetails(id);
 
             if (product == null)
             {
@@ -53,10 +54,7 @@ namespace Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                product.Id = Guid.NewGuid();
-                _context.Add(product);
-
-                await _context.SaveChangesAsync();
+                _productsService.CreateAProduct(product);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -70,7 +68,7 @@ namespace Web.Controllers
                 return NotFound();
             }
 
-            Product? product = await _context.Products.FindAsync(id);
+            Product? product = _productsService.GetProductDetails(id);
             if (product == null)
             {
                 return NotFound();
@@ -81,7 +79,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Price,Category,Id")] Product product)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Price,Category,Quantity,Id")] Product product)
         {
             if (id != product.Id)
             {
@@ -90,22 +88,7 @@ namespace Web.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _productsService.UpdateProduct(product);
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -118,8 +101,7 @@ namespace Web.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = _productsService.GetProductDetails(id);
 
             if (product == null)
             {
@@ -133,19 +115,14 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
-            {
-                _context.Products.Remove(product);
-            }
-
-            await _context.SaveChangesAsync();
+            var product = _productsService.GetProductDetails(id);
+            _productsService.DeleteProduct(product);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<ActionResult> AddToStorage(Guid id)
         {
-            Product? product = await _context.Products.FindAsync(id);
+            Product? product = _productsService.GetProductDetails(id);
             return View(product);
         }
 
@@ -153,22 +130,21 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddToStorage(Guid id, int quantity)
         {
-            Product? product = await _context.Products.FindAsync(id);
+            Product? product = _productsService.GetProductDetails(id);
 
             if (product == null)
             {
                 return NotFound();
             }
 
-            product.Quantity += quantity;
+            if (quantity < 0)
+            {
+                ViewData["errorMessage"] = "Quantity cannot be a negative number.";
+                return View("AddToStorage", product);
+            }
 
-            await _context.SaveChangesAsync();
+            _productsService.AddProductStorage(product, quantity);
             return RedirectToAction("Index");
-        }
-
-        private bool ProductExists(Guid id)
-        {
-            return _context.Products.Any(e => e.Id == id);
         }
     }
 }

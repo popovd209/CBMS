@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Order Again";
     var order = ViewData["Order"] as Entity.Models.Order;
+    var errorMessage = ViewData["errorMessage"] as string;
 }
 
 <h1 class="text-center mb-4">Order Again</h1>
@@ -63,6 +64,10 @@
                                 <label for="Quantities" class="text-coffee">Quantity</label>
                                 <input type="number" name="Quantities" class="form-control" min="1" />
                             </div>
+                            @if (errorMessage != null)
+                            {
+                            <p class="text-danger">@errorMessage</p>
+                            }
                         </div>
                     </div>
                 </div>

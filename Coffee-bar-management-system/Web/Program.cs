@@ -2,7 +2,11 @@ using Entity.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Repository.Implementation;
+using Repository.Interface;
 using Service;
+using Service.Implementation;
+using Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +24,14 @@ builder.Services.AddDefaultIdentity<CbmsUser>(options => options.SignIn.RequireC
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+builder.Services.AddScoped(typeof(IOrderRepository), typeof(OrderRepository));
+
+builder.Services.AddTransient<IBartenderService, BartenderService>();
+builder.Services.AddTransient<IProductsService, ProductsService>();
+builder.Services.AddTransient<IWaiterService, WaiterService>();
 
 var app = builder.Build();
 
