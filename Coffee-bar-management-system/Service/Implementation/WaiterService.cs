@@ -4,14 +4,14 @@ using Service.Interface;
 
 namespace Service.Implementation;
 
-public class ServerService : IServerService
+public class WaiterService : IWaiterService
 {
     private readonly IRepository<Order> _orderRepository;
     private readonly IOrderRepository _detailedOrderRepository;
     private readonly IRepository<ProductInOrder> _productInOrderRepository;
     private readonly IRepository<Product> _productRepository;
 
-    public ServerService(IRepository<Order> orderRepository, IOrderRepository detailedOrderRepository, IRepository<ProductInOrder> productInOrderRepository, IRepository<Product> productRepository)
+    public WaiterService(IRepository<Order> orderRepository, IOrderRepository detailedOrderRepository, IRepository<ProductInOrder> productInOrderRepository, IRepository<Product> productRepository)
     {
         _orderRepository = orderRepository;
         _detailedOrderRepository = detailedOrderRepository;

@@ -10,16 +10,16 @@ using Service.Interface;
 
 namespace Web.Controllers;
 
-public class ServerController : Controller
+public class WaiterController : Controller
 {
     private readonly ApplicationDbContext _context;
-    private readonly IServerService _serverService;
+    private readonly IWaiterService _waiterService;
     private readonly IProductsService _productsService;
 
-    public ServerController(ApplicationDbContext context, IServerService serverService, IProductsService productsService)
+    public WaiterController(ApplicationDbContext context, IWaiterService waiterService, IProductsService productsService)
     {
         _context = context;
-        _serverService = serverService;
+        _waiterService = waiterService;
         _productsService = productsService;
     }
 
@@ -27,9 +27,9 @@ public class ServerController : Controller
     public async Task<IActionResult> Index()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var completedOrders = _serverService.GetPersonalizedOrdersByState(State.COMPLETE, userId);
-        var pendingOrders = _serverService.GetPersonalizedOrdersByState(State.NEW, userId);
-        var deliveredOrders = _serverService.GetPersonalizedOrdersByState(State.DELIVERED, userId);
+        var completedOrders = _waiterService.GetPersonalizedOrdersByState(State.COMPLETE, userId);
+        var pendingOrders = _waiterService.GetPersonalizedOrdersByState(State.NEW, userId);
+        var deliveredOrders = _waiterService.GetPersonalizedOrdersByState(State.DELIVERED, userId);
        
         ViewData["completedOrders"] = completedOrders;
         ViewData["deliveredOrders"] = deliveredOrders;
@@ -51,7 +51,7 @@ public class ServerController : Controller
         if (ModelState.IsValid)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var newOrder = _serverService.CreateOrder(order, userId);
+            var newOrder = _waiterService.CreateOrder(order, userId);
             
             for (int i = 0; i < productIds.Count; i++)
             {
@@ -69,7 +69,7 @@ public class ServerController : Controller
                     
                     if (seekedQuantity <= availableQuantity)
                     {
-                        _serverService.AddProductToOrder(newOrder, product, seekedQuantity);
+                        _waiterService.AddProductToOrder(newOrder, product, seekedQuantity);
                     }
                     else
                     {
@@ -94,14 +94,14 @@ public class ServerController : Controller
             return NotFound();
         }
 
-        var order = _serverService.GetOrderDetails(id);
+        var order = _waiterService.GetOrderDetails(id);
         
         if (order == null)
         {
             return NotFound();
         }
 
-        _serverService.ChangeOrderState(order, State.DELIVERED);
+        _waiterService.ChangeOrderState(order, State.DELIVERED);
 
         return RedirectToAction(nameof(Index));
     }
@@ -115,14 +115,14 @@ public class ServerController : Controller
             return NotFound();
         }
 
-        var order = _serverService.GetOrderDetails(id);
+        var order = _waiterService.GetOrderDetails(id);
         
         if (order == null)
         {
             return NotFound();
         }
 
-        _serverService.ChangeOrderState(order, State.PAID);
+        _waiterService.ChangeOrderState(order, State.PAID);
 
         return RedirectToAction(nameof(Index));
     }
@@ -136,13 +136,13 @@ public class ServerController : Controller
             return NotFound();
         }
 
-        var order = _serverService.GetOrderDetails(id);
+        var order = _waiterService.GetOrderDetails(id);
         
         if (order == null)
         {
             return NotFound();
         }
-        _serverService.CancelOrder(order);
+        _waiterService.CancelOrder(order);
         
         return RedirectToAction(nameof(Index));
     }
@@ -154,7 +154,7 @@ public class ServerController : Controller
             return NotFound();
         }
 
-        var order = _serverService.GetOrderDetails(id);
+        var order = _waiterService.GetOrderDetails(id);
         if (order == null)
         {
             return NotFound();
@@ -176,7 +176,7 @@ public class ServerController : Controller
             return NotFound();
         }
 
-        var order = _serverService.GetOrderDetails(id);
+        var order = _waiterService.GetOrderDetails(id);
         
         if (order == null)
         {
@@ -200,7 +200,7 @@ public class ServerController : Controller
                     }
                     if (seekedQuantity <= availableQuantity)
                     {
-                        _serverService.AddProductToOrder(order, product, seekedQuantity);
+                        _waiterService.AddProductToOrder(order, product, seekedQuantity);
                     }
                     else
                     {
@@ -209,7 +209,7 @@ public class ServerController : Controller
                 }
             }
 
-            _serverService.ChangeOrderState(order, State.NEW);
+            _waiterService.ChangeOrderState(order, State.NEW);
             return RedirectToAction(nameof(Index));
         }
         

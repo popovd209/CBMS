@@ -2,7 +2,7 @@
 
 namespace Service.Interface;
 
-public interface IServerService
+public interface IWaiterService
 {
     ICollection<Order> GetPersonalizedOrdersByState(State state, String id);
     Order CreateOrder(Order order, String userId);
