@@ -1,4 +1,5 @@
-﻿using Entity.Models;
+﻿using Entity.DTOs;
+using Entity.Models;
 
 namespace Service.Interface;
 
@@ -10,4 +11,5 @@ public interface IProductsService
     Product UpdateProduct(Product product);
     void DeleteProduct(Product product);
     Product AddProductStorage(Product product, int quantity);
+    Product? CheckIfExists(ImportProductDTO product);
 }

@@ -1,0 +1,11 @@
+﻿@* @page
+@model Admin_CBMS.Views.Products.ImportModel *@
+@{
+}
+
+<form asp-controller="Products" asp-action="ImportProducts" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <input type="file" name="file" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-success">Import Excel</button>
+</form>

@@ -1,4 +1,5 @@
-﻿using Entity.Models;
+﻿using Entity.DTOs;
+using Entity.Models;
 using Repository.Interface;
 using Service.Interface;
 
@@ -47,5 +48,11 @@ public class ProductsService : IProductsService
         product.Quantity += quantity;
         _productsRepository.Update(product);
         return product;
+    }
+
+    public Product? CheckIfExists(ImportProductDTO product)
+    {
+        return _productsRepository.GetAll()
+            .FirstOrDefault(x => x.Name == product.Name && x.Category == product.Category);
     }
 }
