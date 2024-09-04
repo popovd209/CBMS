@@ -1,6 +1,5 @@
 ﻿using Entity.DTOs;
 using Entity.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Service.Interface;
 
@@ -22,8 +21,14 @@ public class AdminController : Controller
         return View();
     }
 
+    [HttpGet("[action]")]
+    public ICollection<Product> GetAllProducts()
+    {
+        return _productsService.GetAllProducts();
+    }
+
     [HttpPost("[action]")]
-    public bool ImportAllProducts(List<ImportProductDTO> model)
+    public bool ImportProducts(List<ImportProductDTO> model)
     {
         bool status = true;
 

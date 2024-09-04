@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Entity.Models;
-using Repository;
-using Microsoft.CodeAnalysis;
-using Microsoft.AspNetCore.Authorization;
-using Service;
 using Service.Interface;
 
 namespace Web.Controllers

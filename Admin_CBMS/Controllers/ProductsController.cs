@@ -1,16 +1,22 @@
 ﻿using Admin_CBMS.Models;
-using DocumentFormat.OpenXml.Spreadsheet;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
 namespace Admin_CBMS.Controllers;
+
 public class ProductsController : Controller
 {
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        string URL = "https://localhost:7248/api/Admin/GetAllProducts";
+        HttpClient client = new HttpClient();
+        HttpResponseMessage response = client.GetAsync(URL).Result;
+
+        var result = response.Content.ReadAsAsync<ICollection<Product>>().Result;
+
+        return View(result);
     }
 
     public IActionResult ImportProducts(IFormFile file)
@@ -23,9 +29,9 @@ public class ProductsController : Controller
             fileStream.Flush();
         }
 
-        List<Product> products = GetAllProductsFromFile(file.FileName);
+        List<Product> products = GetProductsFromFile(file.FileName);
         HttpClient client = new HttpClient();
-        string URL = "https://localhost:7248/api/Admin/ImportAllProducts";
+        string URL = "https://localhost:7248/api/Admin/ImportProducts";
 
         HttpContent content = new StringContent(JsonConvert.SerializeObject(products), Encoding.UTF8, "application/json");
 
@@ -33,10 +39,10 @@ public class ProductsController : Controller
 
         var result = response.Content.ReadAsAsync<bool>().Result;
 
-        return RedirectToAction("Index", "Order");
+        return RedirectToAction("Index");
     }
 
-    private static List<Product> GetAllProductsFromFile(string fileName)
+    private static List<Product> GetProductsFromFile(string fileName)
     {
         List<Product> products = new List<Product>();
         string filePath = $"{Directory.GetCurrentDirectory()}\\files\\{fileName}";
