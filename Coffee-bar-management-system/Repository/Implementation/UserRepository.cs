@@ -19,6 +19,17 @@ public class UserRepository : IUserRepository
     {
         return entities.AsEnumerable();
     }
+    public List<CbmsUser> GetAllWithRoleAsync(string role)
+    {
+        var usersWithRole = (from user in context.Users
+                                   join userRole in context.UserRoles on user.Id equals userRole.UserId
+                                   join roleEntity in context.Roles on userRole.RoleId equals roleEntity.Id
+                                   where roleEntity.NormalizedName == role.ToUpper()
+                                   select user).ToList();
+
+        return usersWithRole;
+    }
+
 
     public CbmsUser Get(string id)
     {
@@ -57,5 +68,4 @@ public class UserRepository : IUserRepository
         entities.Remove(entity);
         context.SaveChanges();
     }
-
 }
