@@ -1,0 +1,19 @@
+﻿@model Admin_CBMS.Views.Waiters.WaiterPerformanceViewModel
+@{
+    ViewData["Title"] = "WaiterPerformance";
+}
+<form asp-controller="WaiterPerformance" asp-action="Search" method="post" class="form-inline">
+    <div class="form-group mb-2">
+        <label for="WaiterDropdown" class="mr-2">Select Waiter</label>
+        <select class="form-control" id="WaiterDropdown" asp-for="SelectedWaiterId" asp-items="Model.Waiters">
+            <option value="">-- Select Waiter --</option>
+        </select>
+    </div>
+
+    <div class="form-group mx-sm-3 mb-2">
+        <label for="SelectedDate" class="mr-2">Select Date</label>
+        <input type="date" class="form-control" asp-for="SelectedDate" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mb-2">Search</button>
+</form>

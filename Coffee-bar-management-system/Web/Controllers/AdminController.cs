@@ -20,14 +20,14 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("[action]")]
-    public ICollection<WaiterDTO> GetUsersByRole([FromBody] RoleModel model)
+    public ICollection<WaiterDTO> GetUserWithRole([FromBody] RoleModel model)
     {
         var users = _userService.GetAllWithRole(model.Role);
 
         var waiterDTOs = users.Select(user => new WaiterDTO
         {
             Id = user.Id,
-            FullName = user.FullName
+            Name = user.FullName
         }).ToList();
 
         return waiterDTOs;
@@ -70,16 +70,5 @@ public class AdminController : ControllerBase
             }
         }
         return status;
-    }
-
-    public class RoleModel
-    {
-        public string Role { get; set; }
-    }
-
-    public class WaiterDTO
-    {
-        public string Id { get; set; }
-        public string FullName { get; set; }
     }
 }
