@@ -24,9 +24,50 @@ namespace Service.Implementation
             return _userRepository.GetAllWithRoleAsync(role);
         }
 
-        public Task<WaiterPerformanceDTO> GetWaiterPerformanceForDate(string waiterId, DateTime date)
+        public WaiterDTO GetUserById(string id)
         {
-            throw new NotImplementedException();
+            var user = _userRepository.Get(id);
+
+            WaiterDTO userDTO = new WaiterDTO
+            {
+                Id = id,
+                Name = user.FullName,
+                Email = user.Email,
+                PersonalPin = user.PersonalPin.ToString(),
+                ContractDate = user.Date.ToDateTime(TimeOnly.MinValue),
+            };
+
+            return userDTO;
+        }
+
+        public WaiterPerformanceDTO GetWaiterPerformanceForDate(string waiterId, DateTime date)
+        {
+            var userEntity = _userRepository.Get(waiterId);
+
+            var result = new WaiterPerformanceDTO();
+
+            if(userEntity != null)
+            {
+                var paidOrders = userEntity.Orders
+                    .Where(order => order.OrderState == Entity.Models.State.PAID && order.CreatedWhen.Date.Equals(date.Date));
+
+                var mostCommonCategory = paidOrders
+                    .SelectMany(order => order.ProductsInOrder)
+                    .GroupBy(productInOrder => productInOrder.Product.Category)
+                    .OrderByDescending(group => group.Count())
+                    .FirstOrDefault()?.Key;
+
+                result = new WaiterPerformanceDTO
+                {
+                    WaiterName = userEntity.FullName,
+                    TotalOrdersServed = paidOrders.Count(),
+                    MostCommonCategory = mostCommonCategory,
+                    TotalIncome = paidOrders.Sum(order => order.Total),
+                    Date = date,
+                };
+            }
+
+            return result;
         }
     }
 }

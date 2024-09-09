@@ -8,6 +8,6 @@ namespace Admin_CBMS.Views.Waiters
         public string SelectedWaiterId { get; set; }
         public DateTime SelectedDate { get; set; }
         public IEnumerable<SelectListItem> Waiters { get; set; }
-        public PerformanceResultDTO PerformanceResult { get; set; }
+        public PerformanceResultDTO PerformanceResult { get; set; } = new PerformanceResultDTO();
     }
 }

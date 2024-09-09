@@ -11,5 +11,7 @@ public interface IUserService
 {
     List<CbmsUser> GetAllWithRole(string role);
 
-    Task<WaiterPerformanceDTO> GetWaiterPerformanceForDate(string waiterId, DateTime date);
+    WaiterPerformanceDTO GetWaiterPerformanceForDate(string waiterId, DateTime date);
+
+    WaiterDTO GetUserById(string id);
 }

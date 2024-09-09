@@ -19,6 +19,12 @@ public class AdminController : ControllerBase
         _productsService = productsService;
     }
 
+    [HttpGet("[action]")]
+    public WaiterDTO GetUserWithId([FromQuery] string id)
+    {   
+        return _userService.GetUserById(id);
+    }
+
     [HttpPost("[action]")]
     public ICollection<WaiterDTO> GetUserWithRole([FromBody] RoleModel model)
     {
@@ -31,6 +37,14 @@ public class AdminController : ControllerBase
         }).ToList();
 
         return waiterDTOs;
+    }
+    
+    [HttpPost("[action]")]
+    public WaiterPerformanceDTO GetPerformanceByWaiterAndDate([FromBody] SearchModelDTO model)
+    {
+        WaiterPerformanceDTO waiterPerformanceDTO = _userService.GetWaiterPerformanceForDate(model.Id, model.Date);
+
+        return waiterPerformanceDTO;
     }
 
     [HttpGet("[action]")]
