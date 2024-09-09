@@ -19,53 +19,40 @@ public class ProductsController : Controller
         return View(result);
     }
 
-    public IActionResult ImportProducts(IFormFile file)
+    public async Task<IActionResult> ImportProducts(IFormFile file)
     {
-        string pathToUpload = $"{Directory.GetCurrentDirectory()}\\files\\{file.FileName}";
+        Stream stream = new MemoryStream();
+        await file.CopyToAsync(stream);
 
-        using (FileStream fileStream = System.IO.File.Create(pathToUpload))
-        {
-            file.CopyTo(fileStream);
-            fileStream.Flush();
-        }
+        List<Product> products = GetProductsFromFile(stream);
 
-        List<Product> products = GetProductsFromFile(file.FileName);
         HttpClient client = new HttpClient();
         string URL = "https://cbms.azurewebsites.net/api/Admin/ImportProducts";
 
         HttpContent content = new StringContent(JsonConvert.SerializeObject(products), Encoding.UTF8, "application/json");
 
-        HttpResponseMessage response = client.PostAsync(URL, content).Result;
-
-        var result = response.Content.ReadAsAsync<bool>().Result;
+        HttpResponseMessage response = await client.PostAsync(URL, content);
 
         return RedirectToAction("Index");
     }
 
-    private static List<Product> GetProductsFromFile(string fileName)
+    private static List<Product> GetProductsFromFile(Stream stream)
     {
         List<Product> products = new List<Product>();
-        //string filePath = $"{Directory.GetCurrentDirectory()}\\files\\{fileName}";
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", fileName);
-
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+        using var reader = ExcelReaderFactory.CreateReader(stream);
+        while (reader.Read())
         {
-            using (var reader = ExcelReaderFactory.CreateReader(stream))
+            products.Add(new Product
             {
-                while (reader.Read())
-                {
-                    products.Add(new Product
-                    {
-                        Name = reader.GetValue(0).ToString(),
-                        Price = int.Parse(reader.GetValue(1).ToString()),
-                        Category = reader.GetValue(2).ToString(),
-                        Quantity = int.Parse(reader.GetValue(3).ToString()),
-                    });
-                }
-            }
+                Name = reader.GetValue(0).ToString() ?? "product name not provided",
+                Price = int.Parse(reader.GetValue(1).ToString() ?? "0"),
+                Category = reader.GetValue(2).ToString() ?? "product category not provided",
+                Quantity = int.Parse(reader.GetValue(3).ToString() ?? "0"),
+            });
         }
+
         return products;
 
     }
