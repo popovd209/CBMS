@@ -10,7 +10,7 @@ public class ProductsController : Controller
 {
     public async Task<IActionResult> Index()
     {
-        string URL = "https://localhost:7248/api/Admin/GetAllProducts";
+        string URL = "https://cbms.azurewebsites.net/api/Admin/GetAllProducts";
         HttpClient client = new HttpClient();
         HttpResponseMessage response = client.GetAsync(URL).Result;
 
@@ -31,7 +31,7 @@ public class ProductsController : Controller
 
         List<Product> products = GetProductsFromFile(file.FileName);
         HttpClient client = new HttpClient();
-        string URL = "https://localhost:7248/api/Admin/ImportProducts";
+        string URL = "https://cbms.azurewebsites.net/api/Admin/ImportProducts";
 
         HttpContent content = new StringContent(JsonConvert.SerializeObject(products), Encoding.UTF8, "application/json");
 

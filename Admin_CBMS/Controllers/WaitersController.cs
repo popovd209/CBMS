@@ -16,7 +16,7 @@ namespace Admin_CBMS.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            string URL = "https://localhost:7248/api/Admin/GetUserWithRole";
+            string URL = "https://cbms.azurewebsites.net/api/Admin/GetUserWithRole";
             HttpClient client = new HttpClient();
 
             var modelWaiter = new
@@ -55,7 +55,7 @@ namespace Admin_CBMS.Controllers
 
         public async Task<IActionResult> Search(string SelectedWaiterId, DateTime SelectedDate)
         {
-            string URL = "https://localhost:7248/api/Admin/GetPerformanceByWaiterAndDate";
+            string URL = "https://cbms.azurewebsites.net/api/Admin/GetPerformanceByWaiterAndDate";
             HttpClient client = new HttpClient();
             
             var modelSearch = new
@@ -92,14 +92,14 @@ namespace Admin_CBMS.Controllers
         {
             HttpClient client = new HttpClient();
 
-            string baseURL = "https://localhost:7248/api/Admin/GetUserWithId";
+            string baseURL = "https://cbms.azurewebsites.net/api/Admin/GetUserWithId";
             string queryString = $"id={WaiterId}"; 
             string URL = $"{baseURL}?{queryString}";
 
             HttpResponseMessage response = client.GetAsync(URL).Result;
             var waiter = response.Content.ReadAsAsync<WaiterDTO>().Result;
 
-            var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "files", "WaiterReportTemplate.docx");
+            var templatePath = Path.Combine(AppContext.BaseDirectory, "files", "WaiterReportTemplate.docx");
 
             var document = DocumentModel.Load(templatePath);
 
