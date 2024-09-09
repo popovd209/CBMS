@@ -99,7 +99,9 @@ namespace Admin_CBMS.Controllers
             HttpResponseMessage response = client.GetAsync(URL).Result;
             var waiter = response.Content.ReadAsAsync<WaiterDTO>().Result;
 
-            var templatePath = Path.Combine(AppContext.BaseDirectory, "files", "WaiterReportTemplate.docx");
+            //var templatePath = Path.Combine(AppContext.BaseDirectory, "files", "WaiterReportTemplate.docx");
+            var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", "WaiterReportTemplate.docx");
+
 
             var document = DocumentModel.Load(templatePath);
 

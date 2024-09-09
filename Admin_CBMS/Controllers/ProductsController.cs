@@ -45,7 +45,8 @@ public class ProductsController : Controller
     private static List<Product> GetProductsFromFile(string fileName)
     {
         List<Product> products = new List<Product>();
-        string filePath = $"{Directory.GetCurrentDirectory()}\\files\\{fileName}";
+        //string filePath = $"{Directory.GetCurrentDirectory()}\\files\\{fileName}";
+        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", fileName);
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
