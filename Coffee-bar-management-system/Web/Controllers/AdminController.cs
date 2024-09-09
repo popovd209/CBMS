@@ -1,5 +1,6 @@
 ﻿using Entity.DTOs;
 using Entity.Models;
+using Entity.Models.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Service.Interface;
 
@@ -7,18 +8,43 @@ namespace Web.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AdminController : Controller
+public class AdminController : ControllerBase
 {
     private readonly IProductsService _productsService;
+    private readonly IUserService _userService;
 
-    public AdminController(IProductsService productsService)
+    public AdminController(IProductsService productsService, IUserService userService)
     {
+        _userService = userService;
         _productsService = productsService;
     }
 
-    public IActionResult Index()
+    [HttpGet("[action]")]
+    public WaiterDTO GetUserWithId([FromQuery] string id)
+    {   
+        return _userService.GetUserById(id);
+    }
+
+    [HttpPost("[action]")]
+    public ICollection<WaiterDTO> GetUserWithRole([FromBody] RoleModel model)
     {
-        return View();
+        var users = _userService.GetAllWithRole(model.Role);
+
+        var waiterDTOs = users.Select(user => new WaiterDTO
+        {
+            Id = user.Id,
+            Name = user.FullName
+        }).ToList();
+
+        return waiterDTOs;
+    }
+    
+    [HttpPost("[action]")]
+    public WaiterPerformanceDTO GetPerformanceByWaiterAndDate([FromBody] SearchModelDTO model)
+    {
+        WaiterPerformanceDTO waiterPerformanceDTO = _userService.GetWaiterPerformanceForDate(model.Id, model.Date);
+
+        return waiterPerformanceDTO;
     }
 
     [HttpGet("[action]")]

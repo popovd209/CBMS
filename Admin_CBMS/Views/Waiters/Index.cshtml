@@ -1,0 +1,47 @@
+﻿@model Admin_CBMS.Views.Waiters.WaiterPerformanceViewModel
+@{
+    ViewData["Title"] = "Waiters";
+}
+<form asp-controller="Waiters" asp-action="Search" method="post" class="form-inline">
+    <div class="form-group mb-2">
+        <label for="WaiterDropdown" class="mr-2">Select Waiter</label>
+        <select class="form-control" id="WaiterDropdown" asp-for="SelectedWaiterId" asp-items="Model.Waiters">
+            <option value="">-- Select Waiter --</option>
+        </select>
+    </div>
+
+    <div class="form-group mx-sm-3 mb-2">
+        <label for="SelectedDate" class="mr-2">Select Date</label>
+        <input type="date" class="form-control" asp-for="SelectedDate" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mb-2">Search</button>
+</form>
+
+@if (Model.PerformanceResult != null && !string.IsNullOrEmpty(Model.PerformanceResult.WaiterName))
+{
+    <div class="info-section mt-4">
+        <h3>Performance Information</h3>
+        <p><strong>Waiter Name:</strong> @Model.PerformanceResult.WaiterName</p>
+        <p><strong>Total Orders Served:</strong> @Model.PerformanceResult.TotalOrdersServed</p>
+        <p><strong>Most Common Category:</strong> @Model.PerformanceResult.MostCommonCategory</p>
+        <p><strong>Total Income:</strong> @Model.PerformanceResult.TotalIncome MKD</p>
+        <p><strong>Date:</strong> @Model.PerformanceResult.Date?.ToShortDateString()</p>
+
+        <form asp-controller="Waiters" asp-action="GenerateReport" method="post">
+            <input type="hidden" name="WaiterId" value="@Model.SelectedWaiterId" />
+            <input type="hidden" name="WaiterName" value="@Model.PerformanceResult.WaiterName" />
+            <input type="hidden" name="TotalOrdersServed" value="@Model.PerformanceResult.TotalOrdersServed" />
+            <input type="hidden" name="MostCommonCategory" value="@Model.PerformanceResult.MostCommonCategory" />
+            <input type="hidden" name="TotalIncome" value="@Model.PerformanceResult.TotalIncome" />
+            <input type="hidden" name="Date" value="@Model.PerformanceResult.Date?.ToString("yyyy-MM-dd")" />
+            <button type="submit" class="btn btn-secondary mt-2">Generate Report</button>
+        </form>
+    </div>
+}
+else if (TempData["PerformanceResult"] != null && TempData["PerformanceResult"].ToString() == "No data found for the selected waiter and date.")
+{
+    <div class="alert alert-warning mt-4">
+        No data found for the selected waiter and date.
+    </div>
+}
