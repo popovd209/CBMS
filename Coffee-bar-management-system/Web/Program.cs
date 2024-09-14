@@ -3,16 +3,23 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Repository.Implementation;
+using Repository.Implementation.Integration;
 using Repository.Interface;
+using Repository.Interface.Integration;
 using Service;
 using Service.Implementation;
+using Service.Implementation.Integration;
 using Service.Interface;
+using Service.Interface.Integration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionStringForIntegration = builder.Configuration.GetConnectionString("IntegrationConnection") ?? throw new InvalidOperationException("Connection string 'IntegrationConnection' not found.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<IntegrationDbContext>(options => options.UseSqlServer(connectionStringForIntegration));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -28,11 +35,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IOrderRepository), typeof(OrderRepository));
+builder.Services.AddScoped(typeof(IIntegrationRepository<>), typeof(IntegrationRepository<>));
 
 builder.Services.AddTransient<IBartenderService, BartenderService>();
 builder.Services.AddTransient<IProductsService, ProductsService>();
 builder.Services.AddTransient<IWaiterService, WaiterService>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IIntegrationCategoriesService, IntegrationCategoriesService>();
+builder.Services.AddTransient<IIntegrationProductsService, IntegrationProductsService>();
+
 
 var app = builder.Build();
 

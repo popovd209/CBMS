@@ -20,6 +20,9 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Partner" asp-action="Index">Partner store</a>
+                        </li>
                         @if (User.IsInRole(Service.SeedData.GetRoleFor.Bartender))
                         {
                             <li class="nav-item">
