@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Entity.Models;
 using Service.Interface;
+using System.Diagnostics;
 
 namespace Web.Controllers
 {
@@ -12,6 +13,12 @@ namespace Web.Controllers
         public ProductsController(IProductsService productsService)
         {
             _productsService = productsService;
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
 
@@ -45,7 +52,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Price,Category,Id")] Product product)
+        public async Task<IActionResult> Create([Bind("Name,Quantity,Price,Category,Id")] Product product)
         {
             if (ModelState.IsValid)
             {

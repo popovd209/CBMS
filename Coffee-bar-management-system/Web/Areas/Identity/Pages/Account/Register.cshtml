@@ -13,8 +13,6 @@
         <section class="p-4 rounded shadow-sm" style="background-color: #FFF8E1;">
             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                 @Html.AntiForgeryToken()
-                <h2 class="mb-3">Create a new account</h2>
-                <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
 
                 <div class="form-floating mb-3">
