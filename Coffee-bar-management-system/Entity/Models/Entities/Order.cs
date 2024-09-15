@@ -1,4 +1,5 @@
 ﻿using Entity.Models.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Entity.Models
 {
@@ -11,6 +12,7 @@ namespace Entity.Models
             OrderState = State.NEW;
         }
 
+        [DisplayFormat(DataFormatString = "{0:C0}")]
         public int Total { get; set; }
 
         public int TableTag { get; set; }
