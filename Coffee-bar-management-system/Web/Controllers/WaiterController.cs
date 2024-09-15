@@ -48,41 +48,58 @@ public class WaiterController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("TableTag,Id")] Order order, List<Guid> productIds, List<int> quantities)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+        {
+            var products = _productsService.GetAllProducts();
+            ViewData["Products"] = new SelectList(products, "Id", "Name");
+            return View(order);
+        }
+
+        bool hasError = false;
+        List<string> errorMessages = [];
+        List<Tuple<Product, int>> productsToAdd = new List<Tuple<Product, int>>();
+
+        for (int i = 0; i < productIds.Count; i++)
+        {
+            Product? product = _productsService.GetProductDetails(productIds[i]);
+            if (product == null)
+            {
+                break;
+            }
+
+            var availableQuantity = product.Quantity;
+            var seekedQuantity = quantities[i];
+
+            if (seekedQuantity > availableQuantity)
+            {
+                errorMessages.Add($"Not enough {product.Name} in storage. You selected {seekedQuantity}, there is only {availableQuantity} in storage.");
+                hasError = true;
+            }
+            else
+            {
+                productsToAdd.Add(new Tuple<Product, int>(product, seekedQuantity));
+            }
+        }
+
+        if (hasError)
+        {
+            var products = _productsService.GetAllProducts();
+            ViewData["Products"] = new SelectList(products, "Id", "Name");
+            ViewData["ErrorMessages"] = errorMessages;
+            return View(order);
+        }
+        else
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var newOrder = _waiterService.CreateOrder(order, userId);
-            
-            for (int i = 0; i < productIds.Count; i++)
+
+            foreach (var product in productsToAdd)
             {
-                Product? product = _productsService.GetProductDetails(productIds[i]);
-                
-                if (product != null)
-                {
-                    var availableQuantity = product.Quantity;
-                    var seekedQuantity = quantities[i];
-                    if (quantities[i] < 0)
-                    {
-                        ViewData["errorMessage"] = "Quantity cannot be a negative number.";
-                        return View("Create", newOrder);
-                    }
-                    
-                    if (seekedQuantity <= availableQuantity)
-                    {
-                        _waiterService.AddProductToOrder(newOrder, product, seekedQuantity);
-                    }
-                    else
-                    {
-                        return View("NotEnoughProducts", product);
-                    }
-                }
+                _waiterService.AddProductToOrder(newOrder, product.Item1, product.Item2);
             }
-            return RedirectToAction(nameof(Index));
         }
 
-        var products = _productsService.GetAllProducts();
-        ViewData["Products"] = new SelectList(products, "Id", "Name");
-        return View(order);
+        return RedirectToAction(nameof(Index));
     }
     
     [HttpPost, ActionName("Deliver")]
@@ -171,11 +188,6 @@ public class WaiterController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reorder(Guid id, List<Guid> productIds, List<int> quantities)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
         var order = _waiterService.GetOrderDetails(id);
         
         if (order == null)
