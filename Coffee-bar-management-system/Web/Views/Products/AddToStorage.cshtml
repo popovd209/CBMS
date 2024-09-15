@@ -3,7 +3,6 @@
 
 @{
     ViewData["Title"] = "Add to storage";
-    var errorMessage = ViewData["errorMessage"] as string;
 }
 
 <h1 class="text-center mb-4">Add Product to Storage</h1>
@@ -17,12 +16,8 @@
 
                 <div class="form-group mb-3">
                     <label asp-for="Quantity" class="form-label text-coffee">Quantity</label>
-                    <input asp-for="Quantity" class="form-control" placeholder="Enter quantity"/>
+                    <input asp-for="Quantity" class="form-control" placeholder="Enter quantity" min="1"/>
                     <span asp-validation-for="Quantity" class="text-danger"></span>
-                    @if (errorMessage != null)
-                    {
-                    <p class="text-danger">@errorMessage</p>
-                    }
                 </div>
 
                 <div class="text-end mt-3">

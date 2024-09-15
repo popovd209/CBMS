@@ -32,7 +32,7 @@
                 
                 <div class="form-group mb-3">
                     <label asp-for="Quantity" class="form-label text-coffee">Quantity</label>
-                    <input asp-for="Quantity" class="form-control" placeholder="Enter Quantity" />
+                    <input asp-for="Quantity" class="form-control" placeholder="Enter Quantity" min="1" />
                     <span asp-validation-for="Quantity" class="text-danger"></span>
                 </div>
 

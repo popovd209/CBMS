@@ -139,12 +139,6 @@ namespace Web.Controllers
                 return NotFound();
             }
 
-            if (quantity < 0)
-            {
-                ViewData["errorMessage"] = "Quantity cannot be a negative number.";
-                return View("AddToStorage", product);
-            }
-
             _productsService.AddProductStorage(product, quantity);
             return RedirectToAction("Index");
         }
