@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Order Again";
     var order = ViewData["Order"] as Entity.Models.Order;
-    var errorMessage = ViewData["errorMessage"] as string;
+    var errorMessages = ViewData["ErrorMessages"] as List<string>;
 }
 
 <h1 class="text-center mb-4">Order Again</h1>
@@ -64,10 +64,6 @@
                                 <label for="Quantities" class="text-coffee">Quantity</label>
                                 <input type="number" name="Quantities" class="form-control" min="1" />
                             </div>
-                            @if (errorMessage != null)
-                            {
-                            <p class="text-danger">@errorMessage</p>
-                            }
                         </div>
                     </div>
                 </div>
@@ -77,6 +73,13 @@
                 </div>
             </div>
 
+            @if (errorMessages != null && errorMessages.Count > 0)
+            {
+                @foreach (string errorMessage in errorMessages)
+                {
+                    <p class="text-danger text-end mt-3 mb-0">@errorMessage</p>
+                }
+            }
             <div class="text-end mt-3">
                 <div class="text-center" style="display:inline-block">
                     <a asp-action="Index" class="btn btn-secondary">Back to List</a>
