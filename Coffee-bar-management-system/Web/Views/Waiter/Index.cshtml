@@ -28,7 +28,7 @@
             @foreach (var item in pendingOrders)
             {
                 <tr>
-                    <td>@item.Total.ToString("C")</td>
+                    <td>@item.Total.ToString("C0")</td>
                     <td>@item.TableTag</td>
                     <td>@item.CreatedBy?.FullName</td>
                     <td>@item.CreatedWhen.ToString("g")</td>
@@ -68,7 +68,7 @@
             @foreach (var item in completedOrders)
             {
                 <tr>
-                    <td>@item.Total.ToString("C")</td>
+                    <td>@item.Total.ToString("C0")</td>
                     <td>@item.TableTag</td>
                     <td>@item.CreatedBy?.FullName</td>
                     <td>@item.CreatedWhen.ToString("g")</td>
@@ -108,7 +108,7 @@
             @foreach (var item in deliveredOrders)
             {
                 <tr>
-                    <td>@item.Total.ToString("C")</td>
+                    <td>@item.Total.ToString("C0")</td>
                     <td>@item.TableTag</td>
                     <td>@item.CreatedBy?.FullName</td>
                     <td>@item.CreatedWhen.ToString("g")</td>
