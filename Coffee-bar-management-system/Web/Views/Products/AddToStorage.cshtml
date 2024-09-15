@@ -5,10 +5,18 @@
     ViewData["Title"] = "Add to storage";
 }
 
-<h1 class="text-center mb-4">Add Product to Storage</h1>
+<h1 class="text-center mb-4">Add @Model.Name to Storage</h1>
 
 <div class="row justify-content-center">
     <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4 text-muted">Price</dt>
+            <dd class="col-sm-8 text-coffee">@Html.DisplayFor(model => model.Price)</dd>
+
+            <dt class="col-sm-4 text-muted">Category</dt>
+            <dd class="col-sm-8 text-coffee">@Html.DisplayFor(model => model.Category)</dd>
+        </dl>
+
         <section class="p-4 rounded shadow-sm" style="background-color: #FFF8E1;">
             <form asp-action="AddToStorage" method="post">
                 <input type="hidden" asp-for="Id"/>
