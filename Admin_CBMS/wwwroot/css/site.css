@@ -63,3 +63,12 @@ a:hover {
     color: #1ABC9C;
     text-decoration: none;
 }
+
+.card-header {
+    background-color: #795548;
+    color: white;
+}
+
+.card-title {
+    color: white;
+}

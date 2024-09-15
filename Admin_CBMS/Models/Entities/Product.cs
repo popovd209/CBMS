@@ -14,6 +14,7 @@ namespace Admin_CBMS.Models
         public string Name { get; set; }
 
         [Required]
+        [DisplayFormat(DataFormatString = "{0:C0}")]
         public int Price { get; set; }
 
         [Required]
