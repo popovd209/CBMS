@@ -10,7 +10,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 header {
-    background-color: #3E2723;
+    background-color: #6D4C41;
     color: #FFFFFF;
 }
 
@@ -18,7 +18,7 @@ header {
     color: #FFFFFF;
     padding: 10px 15px;
     border-radius: 5px;
-    border: 1px solid #3E2723;
+    border: 1px solid #6D4C41;
     transition: all 0.3s ease-in-out;
 }
 
@@ -30,8 +30,7 @@ header {
 }
 
 .footer {
-    background-color: #3E2723;
-    padding: 10px 0;
+    background-color: #6D4C41;
 }
 
 .btn {
@@ -63,7 +62,7 @@ header {
     color: #5D4037;
 }
 
-.container-fluid, .container {
+.container {
     background-color: #FFFFFF;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -95,8 +94,4 @@ a:hover {
 button.accept-policy {
     font-size: 1rem;
     line-height: inherit;
-}
-
-.inner-footer {
-    padding: 1rem;
 }
