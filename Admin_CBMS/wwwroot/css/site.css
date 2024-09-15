@@ -1,22 +1,65 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #ECF0F1;
+    color: #34495E;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    color: #2C3E50;
+}
+
+header {
+    background-color: #2C3E50;
+    color: #FFFFFF;
+}
+
+.nav-link {
+    color: #FFFFFF;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #2C3E50;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid #3498DB;
+    cursor: pointer;
+}
+
+.footer {
+    background-color: #2C3E50;
+    color: #FFFFFF;
+    padding: 10px 0;
+}
+
+.inner-footer {
+    padding: 1rem;
+}
+
+.btn-primary {
+    background-color: #2980B9;
+    border-color: #2980B9;
+}
+
+.btn-primary:hover {
+    background-color: #3498DB;
+    border-color: #1ABC9C;
+}
+
+.form-control, .form-check-input {
+    border-radius: 5px;
+    border-color: #BDC3C7;
+    background-color: #ECF0F1;
+}
+
+a {
+    color: #2980B9;
+}
+
+a:hover {
+    color: #1ABC9C;
+    text-decoration: none;
 }
