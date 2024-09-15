@@ -12,11 +12,21 @@ h1, h2, h3, h4, h5, h6 {
 header {
     background-color: #3E2723;
     color: #FFFFFF;
-    padding: 10px 0;
 }
 
-.navbar-brand, .nav-link {
-    color: #FFFFFF !important;
+.nav-link {
+    color: #FFFFFF;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #3E2723;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+    color: #e3c359;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid #e3c359;
+    cursor: pointer;
 }
 
 .footer {
@@ -64,22 +74,8 @@ a:hover {
     text-decoration: none;
 }
 
-.navbar-light .navbar-nav .nav-link {
-    color: #6b4e16 !important;
-}
-
-.navbar-light .navbar-nav .nav-link:hover {
-    color: #a05d1a !important;
-}
-
 .text-coffee {
     color: #6b4e16;
-}
-
-a.navbar-brand {
-    white-space: normal;
-    text-align: center;
-    word-break: break-all;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {

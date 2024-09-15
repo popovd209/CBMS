@@ -10,29 +10,26 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white mb-3">
-            <div class="container-fluid">
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+        <nav class="navbar navbar-expand-lg">
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                    </li>
+                    @if (User.IsInRole(Service.SeedData.GetRoleFor.Bartender))
+                    {
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                            <a class="nav-link" asp-area="" asp-controller="Bartender" asp-action="Index">Bartender</a>
                         </li>
-                        @if (User.IsInRole(Service.SeedData.GetRoleFor.Bartender))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Bartender" asp-action="Index">Bartender</a>
-                            </li>
-                        }
-                        
-                        @if (User.IsInRole(Service.SeedData.GetRoleFor.Waiter))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Waiter" asp-action="Index">Waiter</a>
-                            </li>
-                        }
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
+                    }
+                    @if (User.IsInRole(Service.SeedData.GetRoleFor.Waiter))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Waiter" asp-action="Index">Waiter</a>
+                        </li>
+                    }
+                </ul>
+                <partial name="_LoginPartial" />
             </div>
         </nav>
     </header>
