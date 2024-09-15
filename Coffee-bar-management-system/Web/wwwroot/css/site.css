@@ -39,6 +39,10 @@ header {
     border-radius: 0.3rem;
 }
 
+.btn:hover {
+    color: #fff;
+}
+
 .btn-primary {
     background-color: #795548;
     border-color: #6D4C41;
