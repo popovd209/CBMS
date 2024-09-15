@@ -116,7 +116,7 @@
                         <a asp-action="OrderAgain" class="btn btn-warning btn-sm" asp-route-id="@item.Id">Order Again</a>
                     </td>
                     <td class="text-center">
-                        <form asp-action="Pay" class="d-inline">
+                        <form data-pay-order asp-action="Pay" class="d-inline">
                             <input type="hidden" name="id" value="@item.Id" />
                             <input type="submit" value="Pay Order" class="btn btn-danger btn-sm" />
                         </form>
@@ -132,3 +132,51 @@
         }
     </tbody>
 </table>
+
+<!-- Payment Options Modal -->
+<div class="modal fade" id="paymentOptionsModal" tabindex="-1" aria-labelledby="paymentOptionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentOptionsModalLabel">Select Payment Method</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm" method="post">
+                    <input type="hidden" name="id" id="orderIdInput" />
+                    <div class="d-flex justify-content-around">
+                        <button type="button" class="btn btn-success" id="payInCashBtn">Pay in Cash</button>
+                        <button type="button" class="btn btn-primary" id="payWithStripeBtn">Pay with Stripe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this JavaScript to your view (or a linked JS file) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('form[data-pay-order]').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const orderId = this.querySelector('input[name="id"]').value;
+                const modal = new bootstrap.Modal(document.getElementById('paymentOptionsModal'));
+                document.getElementById('orderIdInput').value = orderId;
+                modal.show();
+            });
+        });
+
+        document.getElementById('payInCashBtn').addEventListener('click', function () {
+            const form = document.getElementById('paymentForm');
+            form.action = '@Url.Action("PayInCash", "Waiter")';
+            form.submit();
+        });
+
+        document.getElementById('payWithStripeBtn').addEventListener('click', function () {
+            const form = document.getElementById('paymentForm');
+            form.action = '@Url.Action("PayWithStripe", "Waiter")';
+            form.submit();
+        });
+    });
+</script>

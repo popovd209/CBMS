@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Payment Successful";
+    var orderId = TempData["OrderId"]?.ToString();
+}
+
+<div class="container mt-4">
+    <div class="card border-success">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Payment Successful!</h4>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-success">
+                <p class="mb-1">Your payment has been processed successfully.</p>
+                <p class="mb-1">The order has been marked as paid.</p>
+                <p class="mb-1">Order ID: <strong>@orderId</strong></p>
+                <hr>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <a href="@Url.Action("Index", "Waiter")" class="btn btn-primary">Back to Order Management</a>
+        </div>
+    </div>
+</div>

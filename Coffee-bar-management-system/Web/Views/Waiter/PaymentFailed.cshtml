@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Payment Failed";
+}
+
+<div class="container mt-4">
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Payment Failed</h4>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger">
+                <p class="mb-1">Unfortunately, we were unable to process your payment.</p>
+                <p class="mb-1">Please try again or contact support if the issue persists.</p>
+                <hr>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <a href="@Url.Action("Index", "Waiter")" class="btn btn-primary">Back to Order Management</a>
+        </div>
+    </div>
+</div>

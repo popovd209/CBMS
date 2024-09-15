@@ -11,7 +11,9 @@ using Service.Implementation;
 using Service.Implementation.Integration;
 using Service.Interface;
 using Service.Interface.Integration;
+using Stripe;
 using System.Globalization;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<CbmsUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 var cultureInfo = new CultureInfo("mk-MK");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -91,8 +95,10 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Products}/{action=Index}/{id?}");
+    name: "Products",
+    pattern: "{controller=Products}/{action=Index}/{id?}"
+    );
+
 app.MapRazorPages();
 
 app.Run();

@@ -6,6 +6,8 @@ using Repository;
 using Service;
 using System.Security.Claims;
 using Service.Interface;
+using Stripe.Checkout;
+using Newtonsoft.Json;
 
 namespace Web.Controllers;
 
@@ -121,10 +123,58 @@ public class WaiterController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-    
-    [HttpPost, ActionName("Pay")]
+
+
+    public IActionResult OrderConfirmation()
+    {
+        var service = new SessionService();
+        Session session = service.Get(TempData["Session"].ToString());
+
+        if (session.PaymentStatus == "paid")
+        {
+            return RedirectToAction(nameof(PaymentSuccess));
+        }
+
+        return RedirectToAction(nameof(PaymentFailed));
+    }
+
+    public IActionResult PaymentSuccess()
+    {
+        Guid orderId = Guid.Parse(TempData["OrderId"].ToString());
+        var order = _waiterService.GetOrderDetails(orderId);
+
+        _waiterService.ChangeOrderState(order, State.PAID);
+        
+        return View();
+    }
+
+    public IActionResult PaymentFailed()
+    {
+        return View();
+    }
+
+    [HttpPost, ActionName("PayInCash")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> PayOrder(Guid? id)
+    public async Task<IActionResult> PayInCash(Guid id)
+    {
+        var order = _waiterService.GetOrderDetails(id);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        // Mark the order as paid
+        _waiterService.ChangeOrderState(order, State.PAID);
+
+        TempData["OrderId"] = order.Id;
+
+        return RedirectToAction(nameof(PaymentSuccess));
+    }
+
+    [HttpPost, ActionName("PayWithStripe")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PayWithStripe(Guid? id)
     {
         if (id == null)
         {
@@ -132,17 +182,82 @@ public class WaiterController : Controller
         }
 
         var order = _waiterService.GetOrderDetails(id);
-        
+
         if (order == null)
         {
             return NotFound();
         }
 
-        _waiterService.ChangeOrderState(order, State.PAID);
+        long stripeMinAmount = 5000;
+        long totalAmount = 0;
 
-        return RedirectToAction(nameof(Index));
+        var domain = "https://cbms.azurewebsites.net/";
+
+        var options = new SessionCreateOptions
+        {
+            SuccessUrl = domain + $"Waiter/OrderConfirmation",
+            CancelUrl = domain + $"Waiter/CancelUrl",
+            LineItems = new List<SessionLineItemOptions>(),
+            Mode = "payment",
+        };
+
+        foreach (var item in order.ProductsInOrder)
+        {
+            long calculatedAmount = (long)(item.Product.Price * item.Quantity * 55.5);
+            totalAmount += calculatedAmount;
+
+            var sessionListItem = new SessionLineItemOptions
+            {
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    UnitAmount = calculatedAmount,
+                    Currency = "MKD",
+                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = item.Product.Name,
+                        Description = item.Product.Category
+                    },
+                },
+                Quantity = item.Quantity
+            };
+
+            options.LineItems.Add(sessionListItem);
+        }
+
+        // If the total amount is below the minimum threshold, add a service fee
+        if (totalAmount < stripeMinAmount)
+        {
+            long serviceFeeAmount = stripeMinAmount - totalAmount;
+
+            var serviceFeeItem = new SessionLineItemOptions
+            {
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    UnitAmount = serviceFeeAmount,
+                    Currency = "MKD",
+                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = "Service Fee",
+                        Description = "Additional service fee to meet Stripe's minimum amount"
+                    },
+                },
+                Quantity = 1
+            };
+
+            options.LineItems.Add(serviceFeeItem);
+        }
+
+        var service = new SessionService();
+        Session session = service.Create(options);
+
+        TempData["Session"] = session.Id;
+        TempData["OrderId"] = order.Id;
+
+        Response.Headers.Append("Location", session.Url);
+        return new StatusCodeResult(303);
     }
-    
+
+
     [HttpPost, ActionName("Cancel")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CancelOrder(Guid? id)
