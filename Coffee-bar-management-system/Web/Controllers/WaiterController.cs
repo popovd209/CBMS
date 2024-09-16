@@ -192,11 +192,12 @@ public class WaiterController : Controller
         long totalAmount = 0;
 
         var domain = "https://cbms.azurewebsites.net/";
+        //var domain = "https://localhost:7248/";
 
         var options = new SessionCreateOptions
         {
             SuccessUrl = domain + $"Waiter/OrderConfirmation",
-            CancelUrl = domain + $"Waiter/CancelUrl",
+            CancelUrl = domain + $"Waiter/PaymentFailed",
             LineItems = new List<SessionLineItemOptions>(),
             Mode = "payment",
         };
